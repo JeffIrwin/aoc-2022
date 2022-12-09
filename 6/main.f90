@@ -58,12 +58,12 @@ subroutine part1()
 	read(iu, '(a)', iostat = io) s
 	!if (io == iostat_end) exit
 
-	print *, 's = ', trim(s)
+	!print *, 's = ', trim(s)
 
 	do i = 1, len_trim(s) - n + 1
 
 		c = s(i: i + n - 1)
-		print *, 'c = ', c
+		!print *, 'c = ', c
 
 		if (unique(c)) then
 			ans = i + n - 1
@@ -94,12 +94,12 @@ subroutine part2()
 	read(iu, '(a)', iostat = io) s
 	!if (io == iostat_end) exit
 
-	print *, 's = ', trim(s)
+	!print *, 's = ', trim(s)
 
 	do i = 1, len_trim(s) - n2 + 1
 
 		c = s(i: i + n2 - 1)
-		print *, 'c = ', c
+		!print *, 'c = ', c
 
 		if (unique(c)) then
 			ans = i + n2 - 1
