@@ -88,8 +88,8 @@ subroutine part2
 
 		if (len_trim(s) == 0) then
 
-		! Lazy maxk() implementation.  Should implement growable arrays and
-		! a sorting algorithm.
+			! Lazy maxk() implementation.  Should implement growable arrays and
+			! a sorting algorithm.
 
 			!imax = max(imax, isum)
 
