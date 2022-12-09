@@ -25,6 +25,8 @@ end function isnum
 
 integer function readint(s, is)
 
+	! Extracted to utils.f90 for day 5+
+
 	character(len = *), intent(in) :: s
 
 	integer, intent(inout) :: is
