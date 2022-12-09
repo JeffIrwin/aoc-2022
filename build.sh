@@ -12,7 +12,7 @@
 
 # Fortran compiler
 fc=gfortran
-flags="-Wall -Wextra -Wno-tabs"
+flags="-Wall -Wextra -Wno-tabs -fbounds-check"
 
 #fc=ifort
 #flags="-check all -check bounds -traceback -check uninit"
