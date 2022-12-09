@@ -3,6 +3,8 @@
 
 Advent of code 2022 in Fortran
 
+https://adventofcode.com/
+
 The solution for each day is implemented in `n/main.f90`, where `n` is the day, e.g. 1, 2, 3, ...
 
 To compile and run an implementation:
