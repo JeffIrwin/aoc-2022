@@ -15,4 +15,4 @@ The solution is printed to the console.
 
 ## Requirements
 
-1. A Fortran compiler, preferably `gfortran` or `ifort`.  Configure the compiler in `[build.sh](build.sh)`.
+1. A Fortran compiler, preferably `gfortran` or `ifort`.  Configure the compiler in [build.sh](`build.sh`).
