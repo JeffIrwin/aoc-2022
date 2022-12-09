@@ -3,11 +3,15 @@
 
 module m
 
-	use iso_fortran_env
+	use utils
 
 	implicit none
 
-	character(len = :), allocatable :: finput
+#if 1
+	character(len = *), parameter :: finput = 'test-input.txt'
+#else
+	character(len = *), parameter :: finput = 'input.txt'
+#endif
 
 contains
 
@@ -50,9 +54,6 @@ program main
 
 	print *, 'Starting AOC main'
 	print *, ''
-
-	finput = 'input.txt'
-	finput = 'test-input.txt'
 
 	call part1()
 	!call part2()
