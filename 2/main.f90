@@ -19,7 +19,7 @@ subroutine part1
 
 	logical :: eof
 
-	integer :: i, iu, io, isum
+	integer :: iu, io, isum
 
 	!print *, 'finput = ', finput
 	!print *, ''
@@ -97,7 +97,7 @@ subroutine part2
 
 	logical :: eof
 
-	integer :: i, iu, io, isum
+	integer :: iu, io, isum
 
 	!print *, 'finput = ', finput
 	!print *, ''

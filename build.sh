@@ -12,10 +12,10 @@
 
 # Fortran compiler
 fc=gfortran
-flags="-Wall -Wextra"
+flags="-Wall -Wextra -Wno-tabs"
 
-fc=ifort
-flags="-check all -check bounds -traceback -check uninit"
+#fc=ifort
+#flags="-check all -check bounds -traceback -check uninit"
 
 $fc -o main main.f90 $flags
 
