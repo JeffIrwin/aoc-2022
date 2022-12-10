@@ -12,8 +12,9 @@
 
 # Fortran compiler
 fc=gfortran
+#flags="-cpp -O3"
 #flags="-cpp -Wall -Wextra -Wno-tabs"
-flags="-cpp -Wall -Wextra -Wno-tabs -fbounds-check"
+flags="-cpp -Wall -Wextra -Wno-tabs -fbounds-check -Wno-maybe-uninitialized"
 
 #fc=ifort
 #flags="-fpp -check all -check bounds -traceback -check uninit"
