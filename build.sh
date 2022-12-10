@@ -18,6 +18,7 @@ flags="-cpp -Wall -Wextra -Wno-tabs -fbounds-check"
 #fc=ifort
 #flags="-fpp -check all -check bounds -traceback -check uninit"
 
+$fc --version
 $fc -o main ../utils.f90 main.f90 $flags
 
 #===============================================================================

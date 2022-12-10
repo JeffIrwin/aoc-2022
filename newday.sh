@@ -19,5 +19,5 @@ echo ""
 echo "cd $1"
 echo "../build.sh && ./main"
 
-gvim $1/test-input.txt &
+gvim $1/test-input.txt $1/main.f90 &
 
