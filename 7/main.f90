@@ -93,7 +93,7 @@ recursive function sum_under(d, n) result(isum)
 	end do
 
 	if (d%size <= n) then
-		print *, 'size(', d%name, ') = ', d%size
+		!print *, 'size(', d%name, ') = ', d%size
 		suml = suml + d%size
 	end if
 
@@ -117,7 +117,7 @@ recursive function find_smallest(d, n) result(isum)
 	suml = 0
 
 	if (d%size >= n) then
-		print *, 'size(', d%name, ') = ', d%size
+		!print *, 'size(', d%name, ') = ', d%size
 		suml = d%size
 
 		if (smallest < 0 .or. d%size < smallest) smallest = d%size
@@ -168,7 +168,7 @@ recursive function dirsize(d) result(isum)
 		suml = suml + d%files(i)%size
 	end do
 
-	print *, 'size(', d%name, ') = ', suml
+	!print *, 'size(', d%name, ') = ', suml
 	d%size = suml
 
 	isum = suml
@@ -207,7 +207,7 @@ subroutine pushdir(d, sub)
 
 	d%ndirs = d%ndirs + 1
 
-	print *, 'ndirs = ', d%ndirs
+	!print *, 'ndirs = ', d%ndirs
 
 	if (d%ndirs > size(d%dirs)) then
 		print *, 'Error: in pushdir, ndirs overflow'
@@ -216,13 +216,13 @@ subroutine pushdir(d, sub)
 		stop
 	end if
 
-	print *, 'associating parent'
+	!print *, 'associating parent'
 	sub%parent => d
 
-	print *, 'adding subdir'
+	!print *, 'adding subdir'
 	d%dirs(d%ndirs) = sub
 
-	print *, 'done pushdir'
+	!print *, 'done pushdir'
 
 end subroutine pushdir
 
@@ -276,7 +276,7 @@ function readroot() result(r)
 	!return
 
 	read(iu, '(a)', iostat = io) s
-	print *, 's0 = ', trim(s)
+	!print *, 's0 = ', trim(s)
 
 	is = 1
 	junk = readword(s, is)
@@ -292,7 +292,7 @@ function readroot() result(r)
 		read(iu, '(a)', iostat = io) s
 		if (io == iostat_end) exit
 
-		print *, 's = ', trim(s)
+		!print *, 's = ', trim(s)
 
 		is = 1
 		word = readword(s, is)
@@ -301,7 +301,6 @@ function readroot() result(r)
 			cmd = readword(s, is)
 
 			if (cmd == 'ls') then
-				print *, 'LS ==='
 
 				! Parse output of ls command
 				do
@@ -314,7 +313,7 @@ function readroot() result(r)
 					word = readword(s, is)
 					name = readword(s, is)
 
-					print *, 'word, name = ', word, ', ', name
+					!print *, 'word, name = ', word, ', ', name
 
 					if (word == '$') then
 
@@ -326,19 +325,16 @@ function readroot() result(r)
 						exit
 
 					else if (word == 'dir') then
-						print *, 'dir'
+						!print *, 'dir'
 
 						sub = new(name)
 
-						print *, 'calling pushdir'
+						!print *, 'calling pushdir'
 						call cwd%pushdir(sub)
-						!call cwd%pushdir(new(name))
-						!call pushdir(cwd, sub)
-						print *, 'done'
 
 					else
-						print *, 'file'
-						print *, 'word = ', word
+						!print *, 'file'
+						!print *, 'word = ', word
 
 						read(word, *) size
 						call cwd%pushfile(file(name, size))
@@ -348,10 +344,9 @@ function readroot() result(r)
 				end do
 
 			else if (cmd == 'cd') then
-				print *, 'CD ==='
 
 				arg = readword(s, is)
-				print *, 'arg = ', arg
+				!print *, 'arg = ', arg
 
 				if (arg == '..') then
 					cwd => cwd%parent
@@ -364,8 +359,8 @@ function readroot() result(r)
 
 						if (i > cwd%ndirs) then
 							print *, 'Error: cd to unknown dir "'//arg//'"'
-							call printdir(cwd)
-							call printdir(r)
+							!call printdir(cwd)
+							!call printdir(r)
 							stop
 						end if
 
@@ -387,9 +382,9 @@ function readroot() result(r)
 
 	close(iu)
 
-	call printdir(r)
+	!call printdir(r)
 
-	print *, 'returning'
+	!print *, 'returning'
 
 end function readroot
 
@@ -403,23 +398,23 @@ subroutine part2()
 
 	r = readroot()
 
-	call printdir(r)
+	!call printdir(r)
 
 	call get_sizes(r)
-	call printdir(r)
+	!call printdir(r)
 
-	print *, 'calling sum_under'
+	!print *, 'calling sum_under'
 	isum = sum_under(r, 100000)
 
-	print *, 'root size = ', r%size
+	!print *, 'root size = ', r%size
 
 	free = 70000000 - r%size
 
-	print *, 'free = ', free
+	!print *, 'free = ', free
 
 	delete = 30000000 - free
 
-	print *, 'need to delete = ', delete
+	!print *, 'need to delete = ', delete
 
 	isum = find_smallest(r, delete)
 
@@ -438,12 +433,11 @@ subroutine part1()
 
 	r = readroot()
 
-	call printdir(r)
+	!call printdir(r)
 
 	call get_sizes(r)
-	call printdir(r)
+	!call printdir(r)
 
-	print *, 'calling sum_under'
 	isum = sum_under(r, 100000)
 
 	print *, 'part 1 = ', isum
