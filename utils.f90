@@ -93,12 +93,16 @@ integer function readint(s, is)
 
 	integer :: is0
 
-	do while (.not. isnum(s(is: is)) .and. is <= len_trim(s))
+	! Negative numbers are also allowed.  Assume they are well-formed, e.g. this
+	! will not parse something like -2-4 (which I think might actually be
+	! present in one of the earlier days?)
+	do while (.not. (isnum(s(is:is)) .or. s(is:is) == '-') &
+			.and. is <= len_trim(s))
 		is = is + 1
 	end do
 
 	is0 = is
-	do while (isnum(s(is: is)) .and. is <= len_trim(s))
+	do while ((isnum(s(is:is)) .or. s(is:is) == '-') .and. is <= len_trim(s))
 		is = is + 1
 	end do
 

@@ -37,8 +37,8 @@ subroutine part1()
 
 	close(iu)
 
-	print *, 'part 1 = ', isum
-	print *, ''
+	write(*,*) 'part 1 = ', isum
+	write(*,*) ''
 
 end subroutine part1
 
@@ -52,14 +52,14 @@ program main
 
 	use m
 
-	print *, 'Starting AOC main'
-	print *, ''
+	write(*,*) 'Starting AOC main'
+	write(*,*) ''
 
 	call part1()
 	!call part2()
 
-	print *, 'Ending AOC main'
-	print *, ''
+	write(*,*) 'Ending AOC main'
+	write(*,*) ''
 
 end program main
 

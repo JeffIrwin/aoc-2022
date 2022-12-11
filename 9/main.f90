@@ -114,6 +114,10 @@ subroutine part2()
 						! Simplify diagonal motion to an axis-aligned motion
 
 						if (abs(dk(1)) > abs(dk(2))) then
+
+							! I think these two conditional branches are dead
+							! code, but I'm afraid to touch it
+
 							! Primary motion in x
 							dk(2) = 0
 							dk(1) = sign(1, dk(1))
@@ -130,6 +134,7 @@ subroutine part2()
 							! it's configuration relative to the leading knot
 							dk = h0(:,ik-1) - h(:,ik)
 
+							! Unless that motion is also diagonal
 							if (dk(1) /= 0 .and. dk(2) /= 0) then
 								dk = h(:,ik-1) - h(:,ik)
 								if (abs(dk(1)) > abs(dk(2))) then
@@ -141,6 +146,8 @@ subroutine part2()
 									dk(1) = 0
 									dk(2) = sign(1, dk(2))
 								else
+									! This is the case where both knots are
+									! moving diagonally in the same direction
 									dk = h0(:,ik-1) - h(:,ik)
 								end if
 							end if
