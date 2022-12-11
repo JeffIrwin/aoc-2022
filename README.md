@@ -31,5 +31,6 @@ The solution is printed to the console.
 |   [6](6) | Searching for substrings that contain a unique set of characters | 😀 |
 |   [7](7) | Reconstructing a filesystem by parsing shell commands and their output | 🥵🥵🥵 |
 |   [8](8) | Comparing integers in a rank-2 array | 😅😅 |
-|   [9](9) | |   |
+|   [9](9) | Snake game kinematics | 😅😅 |
+| [10](10) | |   |
 
