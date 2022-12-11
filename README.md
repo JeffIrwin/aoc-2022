@@ -27,9 +27,9 @@ The solution is printed to the console.
 |  2  | Rock paper scissors | 😀 |
 |  3  | Finding common characters in multiple strings | 😀 |
 |  4  | Comparing integer ranges | 😀 |
-|  5  | Rearranging data in a rank-2 array | 😅 |
+|  5  | Rearranging data in a rank-2 array | 😅😅 |
 |  6  | Searching for substrings that contain a unique set of characters | 😀 |
-|  7  | Reconstructing a filesystem by parsing shell commands and their output | 🥵 |
-|  8  | Comparing integers in a rank-2 array | 😅 |
+|  7  | Reconstructing a filesystem by parsing shell commands and their output | 🥵🥵🥵 |
+|  8  | Comparing integers in a rank-2 array | 😅😅 |
 |  9  | |   |
 
