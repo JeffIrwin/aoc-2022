@@ -24,13 +24,14 @@ The solution is printed to the console.
 | Day | Description | Difficulty |
 |-----|-------------|------------|
 |   [1](1) | Summing integers | 😀 |
-|   [2](2) | Rock paper scissors | 😀 |
+|   [2](2) | Playing rock paper scissors | 😀 |
 |   [3](3) | Finding common characters in multiple strings | 😀 |
 |   [4](4) | Comparing integer ranges | 😀 |
 |   [5](5) | Rearranging data in a rank-2 array | 😅😅 |
 |   [6](6) | Searching for substrings that contain a unique set of characters | 😀 |
 |   [7](7) | Reconstructing a filesystem by parsing shell commands and their output | 🥵🥵🥵 |
 |   [8](8) | Comparing integers in a rank-2 array | 😅😅 |
-|   [9](9) | Snake game kinematics | 😅😅 |
-| [10](10) | |   |
+|   [9](9) | Implementing snake game kinematics | 😅😅 |
+| [10](10) | Drawing pixels on a simple screen | 😀 |
+| [11](11) | | |
 
