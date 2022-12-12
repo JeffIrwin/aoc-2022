@@ -37,7 +37,7 @@ subroutine part1()
 
 	close(iu)
 
-	write(*,*) 'part 1 = ', isum
+	write(*,*) 'part1 = ', isum
 	write(*,*) ''
 
 end subroutine part1
