@@ -33,5 +33,8 @@ The solution is printed to the console.
 |   [8](8) | Comparing integers in a rank-2 array | 😅😅 |
 |   [9](9) | Implementing snake game kinematics | 😅😅 |
 | [10](10) | Drawing pixels on a simple screen | 😀 |
-| [11](11) | | |
+| [11](11) | Performing bignum arithmetic, or is it 😉 | 😅😅  |
+| [12](12) | Finding the shortest path | 😅😅  |
+| [13](13) | Parsing and comparing arbitrarily-nested JSON arrays | 😅😅  |
+| [14](14) | | 😅😅  |
 
