@@ -17,7 +17,7 @@ cp template.f90 $1/main.f90
 echo "Run these commands:"
 echo ""
 echo "cd $1"
-echo "../build.sh && ./main"
+echo "../build.sh && time ./main"
 
 gvim $1/test-input.txt $1/main.f90 &
 
