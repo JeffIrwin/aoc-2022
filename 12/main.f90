@@ -271,12 +271,9 @@ subroutine dijkstra(h, ix0, iy0)
 		! Search neighbors
 		do iv = 1, 4
 
-			!print *, 'd(:,iv) = ', d(:,iv)
-
-			!ix = ix0 + d(1,iv)
-			!iy = iy0 + d(2,iv)
 			v = u + d(:,iv)
 
+			!print *, 'd(:,iv) = ', d(:,iv)
 			!print *, '  v = ', v
 
 			! Check bounds
@@ -285,20 +282,10 @@ subroutine dijkstra(h, ix0, iy0)
 				cycle
 			end if
 
-			!! Check if already visited
-			!if (v(ix,iy)) cycle
-			!!if (h(ix,iy) < 0) cycle
-
 			if (.not. q(v(1), v(2))) cycle
 
 			! Check height does not increase by more than 1
-			!if (h(ix,iy) > h(ix0,iy0) + 1) cycle
 			if (h(v(1),v(2)) > h(u(1),u(2)) + 1) cycle
-
-			!! Mark visited
-			!h(ix0, iy0) = -1
-
-			!call dfs(h, vl, ix, iy, nsl)
 
 			! All graph edge distances are 1
 			alt = dist(u(1), u(2)) + 1
