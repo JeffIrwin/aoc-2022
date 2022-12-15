@@ -281,7 +281,7 @@ subroutine dijkstra(h, ix0, iy0)
 
 			! Check bounds
 			if (.not. (1 <= v(1) .and. v(1) <= size(h,1) &
-				  .and.  1 <= v(2) .and. v(2) <= size(h,2))) then
+			    .and.  1 <= v(2) .and. v(2) <= size(h,2))) then
 				cycle
 			end if
 
