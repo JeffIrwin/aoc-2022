@@ -36,5 +36,6 @@ The solution is printed to the console.
 | [11](11) | Performing bignum arithmetic, or is it 😉 | 😅😅  |
 | [12](12) | Finding the shortest path | 😅😅  |
 | [13](13) | Parsing and comparing arbitrarily-nested JSON arrays | 😅😅  |
-| [14](14) | | 😅😅  |
+| [14](14) | Detecting collisions in a pixel game | 😀 |
+| [15](15) | | 😅😅  |
 
