@@ -37,5 +37,6 @@ The solution is printed to the console.
 | [12](12) | Finding the shortest path | 😅😅  |
 | [13](13) | Parsing and comparing arbitrarily-nested JSON arrays | 😅😅  |
 | [14](14) | Detecting collisions in a pixel game | 😀 |
-| [15](15) | | 😅😅  |
+| [15](15) | Searching a large space with "beacons" and "sensors" | 😅😅 |
+| [16](16) | | 😅😅 |
 
