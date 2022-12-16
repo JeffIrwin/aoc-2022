@@ -116,6 +116,32 @@ end function readint
 
 !===============================================================================
 
+integer function countlines(f) result(n)
+
+	! Count number of lines n in a text file named f
+
+	character(len = *), intent(in) :: f
+
+	character :: c
+
+	integer :: io, iu
+
+	open(file = f, newunit = iu, status = 'old')
+
+	n = 0
+
+	do
+		read(iu, '(a)', iostat = io) c
+		if (io == iostat_end) exit
+		n = n + 1
+	end do
+
+	close(iu)
+
+end function countlines
+
+!===============================================================================
+
 end module utils
 
 !===============================================================================
