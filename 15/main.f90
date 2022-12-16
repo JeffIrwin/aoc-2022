@@ -107,8 +107,8 @@ subroutine part2()
 	! work to do
 
 	! For part2 we are interested in all rows in the search space
-!$OMP parallel private(i,norm,half,xl,xh,iy,nobeacons,ix)
-!$OMP do
+	!$OMP parallel private(i,norm,half,xl,xh,iy,nobeacons,ix)
+	!$OMP do
 
 	do iy = bmin, bmax
 	!do iy = 2639657 - 3000, 2639657 + 3000
@@ -144,9 +144,7 @@ subroutine part2()
 				!print *, 'xl, xh = ', xl, xh
 				!print *, ''
 
-! $ !OMP critical
 				nobeacons(xl: xh) = .true.
-! $ !OMP end critical
 
 			end if
 
@@ -174,8 +172,8 @@ subroutine part2()
 		end if
 
 	end do
-!$OMP end do
-!$OMP end parallel
+	!$OMP end do
+	!$OMP end parallel
 
 	write(*,*) 'part2 = ', isum
 	write(*,*) ''
