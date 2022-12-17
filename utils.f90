@@ -13,6 +13,11 @@ module utils
 		vt  = char( 11), & ! vertical tab
 		cr  = char( 13)    ! carriage return
 
+
+	type string
+		character(len = :), allocatable :: s
+	end type
+
 contains
 
 !===============================================================================
@@ -80,6 +85,45 @@ function readword(s, is) result(word)
 	!print *, 'word = ', word
 
 end function readword
+
+!===============================================================================
+
+function readcsv(s, is) result(word)
+
+	! Read a single comma-separated value (not an entire file)
+	!
+	! TODO: Make general readdlm function
+
+	character(len = *), intent(in) :: s
+
+	integer, intent(inout) :: is
+
+	!********
+
+	character(len = :), allocatable :: word
+
+	integer :: is0
+
+	!do while (isws(s(is: is)) .and. is <= len_trim(s))
+	!	is = is + 1
+	!end do
+
+	is0 = is
+	do while (s(is: is) /= ',' .and. is <= len_trim(s))
+		is = is + 1
+	end do
+
+	!print *, 'is0, is = ', is0, is
+
+	!read(s(is0: is - 1), *) readint
+	word = s(is0: is - 1)
+
+	! Skip comma
+	is = is + 1
+
+	!print *, 'word = ', word
+
+end function readcsv
 
 !===============================================================================
 
