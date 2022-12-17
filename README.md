@@ -39,5 +39,6 @@ The solution is printed to the console.
 | [14](14) | Detecting collisions in a pixel game | 😀 |
 | [15](15) | Searching a large space with "beacons" and "sensors" | 😅😅 |
 | [16](16) | Traversing paths in a graph and maximization | 💀💀💀💀 |
-| [17](17) | | 😅😅 |
+| [17](17) | Simulating a trillion tetris pieces | 💀💀💀💀 |
+| [18](18) | | |
 
