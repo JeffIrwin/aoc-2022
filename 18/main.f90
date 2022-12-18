@@ -280,7 +280,7 @@ recursive subroutine dfs(lext, lxyz, x, y, z)
 	lext(x, y, z) = .true.
 	!print *, 'dfs'
 
-	! Try neihbors.  Never expand diagonally
+	! Try neighbors.  Never expand diagonally
 	call dfs(lext, lxyz, x-1, y  , z  )
 	call dfs(lext, lxyz, x  , y-1, z  )
 	call dfs(lext, lxyz, x  , y  , z-1)
