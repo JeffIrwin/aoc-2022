@@ -244,7 +244,7 @@ subroutine part2()
 	end do
 
 	! Subtract outer shell area of "exterior" at the bounding box boundary
-	area = area - 2 * (             &
+	area = area - 2 * (                 &
 		(xmax-xmin+1) * (ymax-ymin+1) + &
 		(ymax-ymin+1) * (zmax-zmin+1) + &
 		(zmax-zmin+1) * (xmax-xmin+1))
