@@ -84,11 +84,33 @@ subroutine part1()
 
 	!print *, 'lxyz = ', lxyz
 
+	area = get_area(lxyz)
+
+	write(*,*) 'part1 = ', area
+	write(*,*) ''
+
+end subroutine part1
+
+!===============================================================================
+
+integer function get_area(lxyz) result(area)
+
+	integer :: xmin, ymin, zmin, xmax, ymax, zmax, x, y, z
+
+	logical, allocatable :: lxyz(:,:,:)
+
 	! Initialize area as if no faces are shared
 	area = 6 * count(lxyz)
 
 	!print *, 'count = ', count(lxyz)
 	!print *, 'unshared area = ', area
+
+	xmin = lbound(lxyz,1)
+	xmax = ubound(lxyz,1)
+	ymin = lbound(lxyz,2)
+	ymax = ubound(lxyz,2)
+	zmin = lbound(lxyz,3)
+	zmax = ubound(lxyz,3)
 
 	do z = zmin, zmax
 	do y = ymin, ymax
@@ -118,10 +140,7 @@ subroutine part1()
 	end do
 	end do
 
-	write(*,*) 'part1 = ', area
-	write(*,*) ''
-
-end subroutine part1
+end function get_area
 
 !===============================================================================
 
@@ -206,17 +225,11 @@ subroutine part2()
 	lext = .false.
 
 	! Mark the exterior by flood filling.  Start at the min corner, which is
-	! guarenteed to be exterior
+	! guarenteed to be exterior because of the way we padded by 1 above
 	call dfs(lext, lxyz, xmin, ymin, zmin)
 
-	! Get area of "exterior" using a method like from part1.  This could use
-	! some DRYing up
-
-	! Initialize area as if no faces are shared
-	area = 6 * count(lext)
-
-	!print *, 'count = ', count(lext)
-	!print *, 'unshared area = ', area
+	! Get area of "exterior" using the method from part1
+	area = get_area(lext)
 
 	! Total bounding box volume, including lava droplets, air pockets, and
 	! exterior
@@ -224,24 +237,6 @@ subroutine part2()
 
 	!print *, 'Total volume = ', voltot
 	!print *, 'air pocket volume = ', voltot - count(lxyz) - count(lext)
-
-	do z = zmin, zmax
-	do y = ymin, ymax
-	do x = xmin, xmax
-
-		if (x>xmin) then
-			if (lext(x-1, y, z) .and. lext(x, y, z)) area = area - 2
-		end if
-		if (y>ymin) then
-			if (lext(x, y-1, z) .and. lext(x, y, z)) area = area - 2
-		end if
-		if (z>zmin) then
-			if (lext(x, y, z-1) .and. lext(x, y, z)) area = area - 2
-		end if
-
-	end do
-	end do
-	end do
 
 	! Subtract outer shell area of "exterior" at the bounding box boundary
 	area = area - 2 * (                 &
