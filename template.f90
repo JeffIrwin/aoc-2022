@@ -53,6 +53,7 @@ program main
 	use m
 
 	write(*,*) 'Starting AOC main'
+	write(*,*) 'Input file = ', finput
 	write(*,*) ''
 
 	call part1()
