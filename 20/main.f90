@@ -134,7 +134,7 @@ end subroutine part2
 
 subroutine part1()
 
-	integer :: i, i0, j, j1, j2, iu, isum, n, dir, npos, shift, i00(1)
+	integer :: i, i0, ifin, j, j1, j2, iu, isum, n, dir, npos, shift, i00(1)
 	integer, allocatable :: vec(:), perm(:), invperm(:)
 
 	isum = 0
@@ -160,7 +160,6 @@ subroutine part1()
 	do i = 1, n
 
 		! Initial index of the number to move
-		!i0 = perm(i)
 		i0 = invperm(i)
 
 		! Number of positions to move (signed)
@@ -168,10 +167,6 @@ subroutine part1()
 
 		! Direction to move (+1 or -1)
 		dir = sign(1, npos)
-
-		!! Convert negative motions to equivalent positive motions
-		!npos = modulo(npos, n)
-		!dir = 1
 
 		!print *, 'i0, dir, npos = ', i0, dir, npos
 
@@ -181,10 +176,6 @@ subroutine part1()
 		do j = i0 + dir, i0 + npos, dir
 
 			! Indices of 2 numbers to be swapped
-
-			!j1 = abs(mod(j-1    , n)) + 1
-			!j2 = abs(mod(j-dir-1, n)) + 1
-
 			j1 = modulo(j-1    , n) + 1
 			j2 = modulo(j-dir-1, n) + 1
 
@@ -198,10 +189,8 @@ subroutine part1()
 			! bubbling i0 to it's mixed position
 			if      (j1 == 1 .and. j2 == n) then
 				shift = shift - 1
-				!vec = cshift(vec, -1)
 			else if (j2 == 1 .and. j1 == n) then
 				shift = shift + 1
-				!vec = cshift(vec,  1)
 			end if
 
 		end do
@@ -214,7 +203,6 @@ subroutine part1()
 
 		! Invert the permutation
 		do j = 1, n
-			!invperm(perm(j)) = j
 			invperm(perm(j)) = j
 		end do
 
