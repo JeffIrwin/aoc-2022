@@ -257,6 +257,9 @@ subroutine part2()
 
 	print *, 'ymaxrest, ymaxmax = ', ymaxrest, ymaxmax
 
+	! After running for 53 hours, this said 1754569190610, which AOC says is too
+	! high :(
+
 	write(*,*) 'part2 = ', ymaxmax
 	write(*,*) ''
 
