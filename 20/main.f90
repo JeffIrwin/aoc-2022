@@ -46,12 +46,12 @@ subroutine part2()
 
 	vect = vect * key
 
-	print *, 'vect  = ', vect
+	!print *, 'vect  = ', vect
 	!print *, 'perm = ', perm
 
 	do iround = 1, nround
 
-	print *, 'round = ', iround
+	!print *, 'round = ', iround
 
 	do i = 1, n
 
@@ -104,7 +104,7 @@ subroutine part2()
 	end do
 	end do
 
-	print *, 'vect  = ', vect
+	!print *, 'vect  = ', vect
 
 	! Find the index of 0
 	i00 = minloc(abs(vect - 0))
