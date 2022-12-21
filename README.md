@@ -41,5 +41,6 @@ The solution is printed to the console.
 | [16](16) | Traversing paths in a graph and maximization | 💀💀💀💀 |
 | [17](17) | Simulating a trillion tetris pieces | part 1 😅😅, part 2 💀💀💀💀 |
 | [18](18) | Finding the surface area of a voxel mesh by flood filling | 😅😅 |
-| [19](19) | | |
+| [19](19) | Looks like another dynamic programming problem like day 16?  Ion want nothing to do with that | |
+| [20](20) | Permuting numbers in a circular list | 😅😅 |
 
