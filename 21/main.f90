@@ -52,7 +52,7 @@ function readinput() result(nodes)
 	end do
 	rewind(iu)
 
-	! Second pass, save while mapping names ! to int indices
+	! Second pass, save while mapping names to int indices
 	do i = 1, n
 		read(iu, '(a)', iostat = io) s
 		if (io == iostat_end) exit
@@ -140,7 +140,7 @@ recursive integer(kind = 8) function evaluate(nodes, i) result(num)
 	end if
 
 	!if (nodes(i)%name == 'root') then
-	!	! You can plug your solution to part to into the input file(s) for
+	!	! You can plug your solution to part2 into the input file(s) for
 	!	! the "humn" value to check that the answer results in a match here
 	!	print *, 'root left  = ', left
 	!	print *, 'root right = ', right
@@ -202,7 +202,9 @@ recursive integer(kind = 8) function solve(nodes, match, unknown) result(num)
 
 	end if
 
-	! The time for al-jabr has come
+	! The time for al-jabr has come.  I sketched out the small example
+	! tree before writing any code for part2, and you should too!  If you
+	! have trouble getting started, check out the PNG in this folder.
 
 	! Recursively solve for parent
 	par_val = solve(nodes, match, unknown_parent)
