@@ -1,0 +1,2 @@
+
+![](solve-tree-sketch.png)
