@@ -43,4 +43,5 @@ The solution is printed to the console.
 | [18](18) | Finding the surface area of a voxel mesh by flood filling | 😅😅 |
 | 19 | Looks like another dynamic programming problem like day 16?  Ion want nothing to do with that | |
 | [20](20) | Permuting numbers in a circular list | 😅😅 |
+| [21](21) | Evaluating arithmetic expressions and symbolic algebra | 😅😅 |
 
