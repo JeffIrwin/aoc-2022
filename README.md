@@ -44,4 +44,4 @@ The solution is printed to the console.
 | 19 | Looks like another dynamic programming problem like day 16?  Ion want nothing to do with that | |
 | [20](20) | Permuting numbers in a circular list | 😅😅 |
 | [21](21) | Evaluating arithmetic expressions and symbolic algebra | 😅😅 |
-
+| [22](22) | Following a path with obstacle in 2D and projected 3D | 🥵🥵🥵 |
