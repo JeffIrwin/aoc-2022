@@ -267,6 +267,8 @@ subroutine part2()
 			! directions of the arrows in my diagram, labelled 1-7.  Later we
 			! will have the "reverse" cases in the opposite directions
 			!
+			! See the pictures of my sketches in this folder
+			!
 			! To make matters exponentially worse, the small test-input.txt and have
 			! the real data have totally different wrapped mapping conventions which
 			! I didn't notice until I already implemented these cases for the test.
@@ -437,7 +439,6 @@ subroutine part2()
 				ix = 3 * nc + 1 - ix0
 				heading = south
 
-			!else if (iy == 3 * nc .and. ix <= 3 * nc .and. heading == south) then
 			else if (iy == 3 * nc .and. (ix-1) / nc == 2 .and. heading == south) then
 
 				! Case 5: from D to B
@@ -446,7 +447,6 @@ subroutine part2()
 				ix = 3 * nc + 1 - ix0
 				heading = north
 
-			!else if (ix == 3 * nc .and. iy <= nc .and. heading == east) then
 			else if (ix == 3 * nc .and. (iy-1) / nc == 0 .and. heading == east) then
 
 				! Case 6: from U to R
