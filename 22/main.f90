@@ -64,7 +64,7 @@ subroutine readinput(map, path)
 	end do
 	rewind(iu)
 
-	print *, 'nx, ny = ', nx, ny
+	!print *, 'nx, ny = ', nx, ny
 
 	! Second pass: save map
 	allocate(map(nx,ny))
@@ -156,9 +156,9 @@ subroutine part2()
 	character(len = :), allocatable :: case
 
 	integer :: i, j, isum, ix, iy, nx, ny, heading, dx, dy, nmove, row, &
-			column, facing, ix0, iy0, heading0, ixl, iyl, jx, jy
+			column, facing, ix0, iy0, heading0
 
-	integer, allocatable :: map(:,:), path(:), mapl(:,:)
+	integer, allocatable :: map(:,:), path(:)
 
 	isum = 0
 
@@ -166,10 +166,7 @@ subroutine part2()
 	nx = size(map, 1)
 	ny = size(map, 2)
 
-	!! Size of a single cube face.  example and big input are different
-	!nc = ny / 3
-
-	print *, 'nc = ', nc
+	!print *, 'nc = ', nc
 
 	! input.txt 2D projection wrapping is different than
 	! test-input.txt!  Convert the input to the test wrapping
@@ -215,21 +212,6 @@ subroutine part2()
 	!       +---+
 	!
 
-	print *, 'map = '
-	do iy = 1, ny
-		do ix = 1, nx
-			if      (map(ix,iy) == open) then
-				write(*, '(a)', advance = 'no') '.'
-			else if (map(ix,iy) == solid) then
-				write(*, '(a)', advance = 'no') '#'
-			else if (map(ix,iy) == off) then
-				write(*, '(a)', advance = 'no') ' '
-			end if
-		end do
-		write(*,*)
-	end do
-	!stop
-
 	! Find starting position: leftmost open tile of the top row
 	iy = 1
 	ix = 1
@@ -240,7 +222,7 @@ subroutine part2()
 	! Initial heading is right (dirs(:,1))
 	heading = 1
 
-	print *, 'start = ', ix, iy
+	!print *, 'start = ', ix, iy
 
 	! Loop through path instructions
 	do i = 1, size(path)
@@ -272,7 +254,7 @@ subroutine part2()
 			dx = dirs(1,heading)
 			dy = dirs(2,heading)
 
-			print '(a,3i4)', 'ix, iy, hd = ', ix, iy, heading
+			!print '(a,3i4)', 'ix, iy, hd = ', ix, iy, heading
 
 			! Advance 1 move
 			!
@@ -284,6 +266,15 @@ subroutine part2()
 			! First we have the "forward" cases, following the forward
 			! directions of the arrows in my diagram, labelled 1-7.  Later we
 			! will have the "reverse" cases in the opposite directions
+			!
+			! To make matters exponentially worse, the small test-input.txt and have
+			! the real data have totally different wrapped mapping conventions which
+			! I didn't notice until I already implemented these cases for the test.
+			! So we can't share any code across both data sets :(
+			!
+			! I would not have implemented it like this if I looked at the data
+			! earlier.  I guess I would have tried converting the 2D map to a fully 3D
+			! cube and moving around in 3D instead :shrug:
 
 			if (finput == 'input.txt') then
 
@@ -421,26 +412,20 @@ subroutine part2()
 				heading = south
 
 			else if (iy == 2 * nc .and. heading == south &
-					!.and. nc < ix .and. ix <= 2*nc) then
 					.and. (ix-1) / nc == 1) then
 
 				! Case 2: from L to D
 				case = 'case 2'
 				ix = 2 * nc + 1
-				!iy = 2 * nc + (2 * nc + 1 - ix0) TODO
-				!iy = 3 * nc + 1 - (2 * nc - ix0)
 				iy = 3 * nc + 1 - (ix0 - nc)
 				heading = east
 
 			else if (ix == 3 * nc .and. (iy-1) / nc == 1 .and. heading == east) then
 
-				! Case 3: from F to R.  THIS IS CORRECT FOR EXAMPLE
+				! Case 3: from F to R.  This is basically the only special case covered
+				! in the small example
 				case = 'case 3'
 				iy = 2 * nc + 1
-				!ix = 3 * nc + (2 * nc + 1 - iy0)
-				!ix = 4 * nc + 1 - (2 * nc + 1 - iy0)
-				!ix = 4 * nc + 1 - (2 * nc - iy0)
-				!ix = 3 * nc + (2 * nc + 1 - iy0)
 				ix = 4 * nc + 1 - (iy0 - nc)
 				heading = south
 
@@ -449,8 +434,6 @@ subroutine part2()
 				! Case 4: from U to B
 				case = 'case 4'
 				iy = nc + 1
-				!ix = 3 * nc + 1 - ix0
-				!ix = nc + 1 - (3 * nc - ix0)
 				ix = 3 * nc + 1 - ix0
 				heading = south
 
@@ -478,7 +461,6 @@ subroutine part2()
 				! Case 7: from B to R
 				case = 'case 7'
 				iy = 3 * nc
-				!ix = 4 * nc + 1 - (2 * nc - iy0)
 				ix = 4 * nc + 1 - (iy0 - nc)
 				heading = north
 
@@ -491,27 +473,22 @@ subroutine part2()
 				iy = ix0 - nc
 				heading = east
 
-			!else if (ix == 2*nc + 1 .and. iy > 2 * nc .and. heading == west) then
 			else if (ix == 2*nc + 1 .and. (iy-1) / nc == 2 .and. heading == west) then
 
 				! Case 2r: from D to L
 				case = 'case 2r'
 				iy = 2 * nc
-				!ix = 2 * nc + 1 - (3 * nc - iy0)
 				ix = 2 * nc + 1 - (iy0 - 3 * nc)
 				heading = north
 
-			!else if (iy == 2 * nc + 1 .and. ix > 3 * nc .and. heading == north) then
 			else if (iy == 2 * nc + 1 .and. (ix-1) / nc == 3 .and. heading == north) then
 
 				! Case 3r: from R to F
 				case = 'case 3r'
 				ix = 3 * nc
-				!iy = 2 * nc + 1 - (4 * nc - ix0)
 				iy = 2 * nc + 1 - (ix0 - 3 * nc)
 				heading = west
 
-			!else if (iy == nc + 1 .and. ix <= nc .and. heading == north) then
 			else if (iy == nc + 1 .and. (ix-1) / nc == 0 .and. heading == north) then
 
 				! Case 4r: from B to U
@@ -520,7 +497,6 @@ subroutine part2()
 				ix = 3 * nc + 1 - ix0
 				heading = south
 
-			!else if (iy == 2 * nc .and. ix <= nc .and. heading == south) then
 			else if (iy == 2 * nc .and. (ix-1) / nc == 0 .and. heading == south) then
 
 				! Case 5r: from B to D
@@ -529,23 +505,19 @@ subroutine part2()
 				ix = 3 * nc + 1 - ix0
 				heading = north
 
-			!else if (ix == 4 * nc .and. heading == east) then
 			else if (ix == 4 * nc .and. (iy-1) / nc == 2 .and. heading == east) then
 
 				! Case 6r: from R to U
 				case = 'case 6r'
 				ix = 3 * nc
-				!iy = nc + 1 - (3 * nc - iy0)
 				iy = nc + 1 - (iy0 - 2 * nc)
 				heading = west
 
-			!else if (iy == 3 * nc .and. ix > 3 * nc .and. heading == south) then
 			else if (iy == 3 * nc .and. (ix-1) / nc == 3 .and. heading == south) then
 
 				! Case 7r: from R to B
 				case = 'case 7r'
 				ix = 1
-				!iy = 2 * nc + 1 - (4 * nc - ix0)
 				iy = 2 * nc + 1 - (ix0 - 3 * nc)
 				heading = east
 
@@ -560,18 +532,12 @@ subroutine part2()
 
 			end if ! input.txt / test-input.txt
 
-			!! Wrap around at the edge of the map
-			!do while (map(wrap(ix+dx,nx), wrap(iy+dy,ny)) == off)
-			!	ix = wrap(ix + dx, nx)
-			!	iy = wrap(iy + dy, ny)
-			!end do
-
-			print *, case
-			print *, ''
+			!print *, case
+			!print *, ''
 
 			if (map(ix,iy) == off) then
 				write(*,*) 'Error: off map'
-				print *, 'ix, iy = ', ix, iy
+				write(*,*) 'ix, iy = ', ix, iy
 				stop
 			end if
 
@@ -605,9 +571,9 @@ subroutine part2()
 		facing = 1
 	end if
 
-	print *, 'col    = ', column
-	print *, 'row    = ', row
-	print *, 'facing = ', facing
+	!print *, 'col    = ', column
+	!print *, 'row    = ', row
+	!print *, 'facing = ', facing
 
 	isum = 1000 * row + 4 * column + facing
 
@@ -641,7 +607,7 @@ subroutine part1()
 	! Initial heading is right (dirs(:,1))
 	heading = 1
 
-	print *, 'start = ', ix, iy
+	!print *, 'start = ', ix, iy
 
 	! Loop through path instructions
 	do i = 1, size(path)
@@ -693,8 +659,8 @@ subroutine part1()
 
 		end do
 
-		print *, 'heading = ', heading
-		print *, 'ix, iy = ', ix, iy
+		!print *, 'heading = ', heading
+		!print *, 'ix, iy = ', ix, iy
 
 	end do
 
