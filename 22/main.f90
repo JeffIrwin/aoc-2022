@@ -194,7 +194,7 @@ subroutine part2()
 	! The global coordinate axes are shown above, and "o" marks each face's
 	! original corner.
 	!
-	! input.txt, which needs to be remapped, is like this:
+	! input.txt, is like this:
 	!
 	!      +-x> +---+---+
 	!      y    |o  |   |
@@ -214,126 +214,6 @@ subroutine part2()
 	!       |o  |
 	!       +---+
 	!
-	! Note that some faces are translated (UFD) in the global 2D
-	! coordinates and others are rotated (RLB)
-
-	if (finput == 'input.txt') then
-
-		! Backup original
-		mapl = map
-
-		! Clear
-		deallocate(map)
-		allocate(map(4*nc, 3*nc))
-		map = off
-
-		! Translate U, F, and D
-		do ix = 2*nc+1, 3*nc
-			do iy = 1, 3 * nc
-				map(ix,iy) = mapl(ix-nc, iy)
-			end do
-		end do
-
-		! Translate and rotate R 180 degrees
-		ixl = 3*nc+1
-		do ix = 3*nc+1, 4*nc
-			ixl = ixl - 1
-			iyl = nc+1
-			do iy = 2*nc+1, 3*nc
-				iyl = iyl - 1
-				map(ix,iy) = mapl(ixl, iyl)
-			end do
-		end do
-
-		!! Translate and rotate L 90 degrees
-		!iyl = 3 * nc + 1
-		!do ix = nc+1, 2*nc
-		!	iyl = iyl - 1
-		!	ixl = 0
-		!	do iy = nc+1, 2*nc
-		!		ixl = ixl + 1
-		!		map(ix,iy) = mapl(ixl, iyl)
-		!	end do
-		!end do
-		!! Translate and rotate B 90 degrees
-		!iyl = 4 * nc + 1
-		!do ix = 1, nc
-		!	iyl = iyl - 1
-		!	ixl = 0
-		!	do iy = nc+1, 2*nc
-		!		ixl = ixl + 1
-		!		map(ix,iy) = mapl(ixl, iyl)
-		!	end do
-		!end do
-
-		!! Translate and rotate L 90 degrees
-		!iyl = 2 * nc
-		!do ix = nc+1, 2*nc
-		!	iyl = iyl + 1
-		!	ixl = nc + 1
-		!	do iy = nc+1, 2*nc
-		!		ixl = ixl - 1
-		!		map(ix,iy) = mapl(ixl, iyl)
-		!	end do
-		!end do
-		!! Translate and rotate B 90 degrees
-		!iyl = 3 * nc
-		!do ix = 1, nc
-		!	iyl = iyl + 1
-		!	ixl = nc + 1
-		!	do iy = nc+1, 2*nc
-		!		ixl = ixl - 1
-		!		map(ix,iy) = mapl(ixl, iyl)
-		!	end do
-		!end do
-
-		! Translate and rotate L 90 degrees
-		iyl = nc+1
-		do ix = nc+1, 2*nc
-			iyl = iyl - 1
-			ixl = 2*nc
-			do iy = nc+1, 2*nc
-				ixl = ixl + 1
-				map(ix,iy) = mapl(iyl, ixl)
-			end do
-		end do
-		! Translate and rotate B 90 degrees
-		iyl = nc+1
-		do ix = 1, nc
-			iyl = iyl - 1
-			ixl = 3*nc
-			do iy = nc+1, 2*nc
-				ixl = ixl + 1
-				map(ix,iy) = mapl(iyl, ixl)
-			end do
-		end do
-
-		!! Translate and rotate L 90 degrees
-		!iyl = 0
-		!do ix = nc+1, 2*nc
-		!	iyl = iyl + 1
-		!	ixl = 3*nc+1
-		!	do iy = nc+1, 2*nc
-		!		ixl = ixl - 1
-		!		map(ix,iy) = mapl(iyl, ixl)
-		!	end do
-		!end do
-		!! Translate and rotate B 90 degrees
-		!iyl = 0
-		!do ix = 1, nc
-		!	iyl = iyl + 1
-		!	ixl = 4*nc+1
-		!	do iy = nc+1, 2*nc
-		!		ixl = ixl - 1
-		!		map(ix,iy) = mapl(iyl, ixl)
-		!	end do
-		!end do
-
-		nx = size(map, 1)
-		ny = size(map, 2)
-		deallocate(mapl)
-
-	end if
 
 	print *, 'map = '
 	do iy = 1, ny
@@ -404,6 +284,133 @@ subroutine part2()
 			! First we have the "forward" cases, following the forward
 			! directions of the arrows in my diagram, labelled 1-7.  Later we
 			! will have the "reverse" cases in the opposite directions
+
+			if (finput == 'input.txt') then
+
+			if      (ix == nc + 1 .and. (iy-1)/nc == 1 .and. heading == west) then
+
+				! Case 1: from F to L
+				case = 'case 1'
+				iy = 2 * nc + 1
+				ix = iy0 - nc
+				heading = south
+
+			else if (iy == 2 * nc + 1 .and. (ix-1)/nc == 0 .and. heading == north) then
+
+				! Case 1r: from L to F
+				case = 'case 1r'
+				ix = nc + 1
+				iy = nc + (ix0 - 0)
+				heading = east
+
+			else if (ix == 2 * nc .and. (iy-1)/nc == 1 .and. heading == east) then
+
+				! Case 2: from F to R
+				case = 'case 2'
+				iy = nc
+				ix = 2 * nc + iy0 - nc
+				heading = north
+
+			else if (iy == nc .and. (ix-1)/nc == 2 .and. heading == south) then
+
+				! Case 2r: from R to F
+				case = 'case 2r'
+				ix = 2 * nc
+				iy = nc + (ix0 - 2 * nc)
+				heading = west
+
+			else if (iy == 3 * nc .and. (ix-1)/nc == 1 .and. heading == south) then
+
+				! Case 3: from D to B
+				case = 'case 3'
+				ix = nc
+				iy = 3 * nc + ix0 - nc
+				heading = west
+
+			else if (ix == nc .and. (iy-1)/nc == 3 .and. heading == east) then
+
+				! Case 3r: from B to D
+				case = 'case 3r'
+				iy = 3 * nc
+				ix = nc + (iy0 - 3 * nc)
+				heading = north
+
+			else if (ix == nc + 1 .and. (iy-1)/nc == 0 .and. heading == west) then
+
+				! Case 4: from U to L
+				case = 'case 4'
+				ix = 1
+				iy = 3 * nc + 1 - (iy0 - 0)
+				heading = east
+
+			else if (ix == 1 .and. (iy-1)/nc == 2 .and. heading == west) then
+
+				! Case 4r: from L to U
+				case = 'case 4r'
+				ix = nc + 1
+				iy = nc + 1 - (iy0 - 2 * nc)
+				heading = east
+
+			else if (ix == 3 * nc .and. (iy-1)/nc == 0 .and. heading == east) then
+
+				! Case 5: from R to D
+				case = 'case 5'
+				ix = 2 * nc
+				iy = 3 * nc + 1 - (iy0 - 0)
+				heading = west
+
+			else if (ix == 2 * nc .and. (iy-1)/nc == 2 .and. heading == east) then
+
+				! Case 5r: from D to R
+				case = 'case 5r'
+				ix = 3 * nc
+				iy = nc + 1 - (iy0 - 2 * nc)
+				heading = west
+
+			else if (iy == 1 .and. (ix-1)/nc == 2 .and. heading == north) then
+
+				! Case 6: from R to B
+				case = 'case 6'
+				iy = 4 * nc
+				ix = 0 + (ix0 - 2 * nc)
+				heading = north
+
+			else if (iy == 4 * nc .and. (ix-1)/nc == 0 .and. heading == south) then
+
+				! Case 6r: from B to R
+				case = 'case 6r'
+				iy = 1
+				ix = 2 * nc + (ix0 - 0)
+				heading = south
+
+			else if (iy == 1 .and. (ix-1)/nc == 1 .and. heading == north) then
+
+				! Case 7: from U to B
+				case = 'case 7'
+				ix = 1
+				iy = 3 * nc + (ix0 - nc)
+				heading = east
+
+			else if (ix == 1 .and. (iy-1)/nc == 3 .and. heading == west) then
+
+				! Case 7r: from B to U
+				case = 'case 7r'
+				iy = 1
+				ix = nc + (iy0 - 3 * nc)
+				heading = south
+
+			else
+
+				! Default case: advance 1 move with no special logic
+				case = 'case default'
+				ix = ix + dx
+				iy = iy + dy
+
+			end if
+
+      !*******************************
+			else ! finput = 'test-input.txt'
+      !*******************************
 
 			if      (ix == 2 * nc + 1 .and. heading == west .and. iy <= 1 * nc) then
 
@@ -476,7 +483,6 @@ subroutine part2()
 				heading = north
 
 			! Reverse cases (r)
-			! TODO: double check reverse case conditions
 			else if (iy == nc + 1 .and. (ix-1)/nc == 1 .and. heading == north) then
 
 				! Case 1r: from L to U
@@ -552,6 +558,8 @@ subroutine part2()
 
 			end if
 
+			end if ! input.txt / test-input.txt
+
 			!! Wrap around at the edge of the map
 			!do while (map(wrap(ix+dx,nx), wrap(iy+dy,ny)) == off)
 			!	ix = wrap(ix + dx, nx)
@@ -569,8 +577,6 @@ subroutine part2()
 
 			! Stop just before a solid wall.  It's important to check for this
 			! *after* the wrap-around logic above
-			!if (map(wrap(ix+dx,nx), wrap(iy+dy,ny)) == solid) then
-			!if (map(wrap(ix,nx), wrap(iy,ny)) == solid) then
 			if (map(ix,iy) == solid) then
 				ix = ix0
 				iy = iy0
@@ -578,119 +584,12 @@ subroutine part2()
 				exit
 			end if
 
-			!! Advance 1 move
-			!ix = wrap(ix + dx, nx)
-			!iy = wrap(iy + dy, ny)
-
 		end do
 
 		!print *, 'heading = ', heading
 		!print *, 'ix, iy = ', ix, iy
 
 	end do
-
-	! TODO: undo the wrap mapping before getting final row/col
-
-	if (finput == 'input.txt') then
-
-		if (2 * nc + 1 <= ix .and. ix <= 3 * nc) then
-			print *, 'Final UFD'
-			print *, 'ix = ', ix
-			ix = ix - nc
-		else
-
-			print *, 'Final RLB'
-			!write(*,*) 'Error: not implemented!'
-			!stop
-
-			if      ((ix-1) / nc == 0) then
-				print *, 'B'
-				write(*,*) 'Error: not implemented!'
-				stop
-
-				jx = ix
-				jy = iy
-
-				iyl = 0
-				do ix = 1, nc
-					iyl = iyl + 1
-					ixl = 4*nc+1
-					do iy = nc+1, 2*nc
-						ixl = ixl - 1
-						if (ix == jx .and. iy == jy) then
-							row = iyl
-							column = ixl
-						end if
-					end do
-				end do
-
-				ix = row
-				iy = column
-				heading = wrap(heading + 1, ndirs)
-
-			else if ((ix-1) / nc == 1) then
-				print *, 'L'
-				write(*,*) 'Error: not implemented!'
-				stop
-
-				jx = ix
-				jy = iy
-
-				! Translate and rotate L 90 degrees
-				iyl = 0
-				do ix = nc+1, 2*nc
-					iyl = iyl + 1
-					ixl = 3*nc+1
-					do iy = nc+1, 2*nc
-						ixl = ixl - 1
-						!map(ix,iy) = mapl(iyl, ixl)
-
-						if (ix == jx .and. iy == jy) then
-							row = iyl
-							column = ixl
-						end if
-
-					end do
-				end do
-
-				ix = row
-				iy = column
-				heading = wrap(heading + 1, ndirs)
-
-			else if ((ix-1) / nc == 3) then
-				print *, 'R'
-				!write(*,*) 'Error: not implemented!'
-				!stop
-
-				jx = ix
-				jy = iy
-
-				ixl = 3*nc+1
-				do ix = 3*nc+1, 4*nc
-					ixl = ixl - 1
-					iyl = nc+1
-					do iy = 2*nc+1, 3*nc
-						iyl = iyl - 1
-						!map(ix,iy) = mapl(ixl, iyl)
-						if (ix == jx .and. iy == jy) then
-							row = iyl
-							column = ixl
-						end if
-					end do
-				end do
-
-				ix = row
-				iy = column
-				heading = wrap(heading + 2, ndirs)
-
-			else
-				print *, 'Error: ???'
-				stop
-			end if
-
-		end if
-
-	end if
 
 	row = iy
 	column = ix
@@ -706,8 +605,8 @@ subroutine part2()
 		facing = 1
 	end if
 
-	print *, 'row    = ', row
 	print *, 'col    = ', column
+	print *, 'row    = ', row
 	print *, 'facing = ', facing
 
 	isum = 1000 * row + 4 * column + facing
@@ -835,7 +734,7 @@ program main
 	write(*,*) ''
 
 	call part1()
-	!call part2()
+	call part2()
 
 	write(*,*) 'Ending AOC main'
 	write(*,*) ''
