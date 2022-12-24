@@ -22,6 +22,14 @@ contains
 
 !===============================================================================
 
+integer function wrap(i,n)
+	! Wrap i to range [1, n]
+	integer :: i, n
+	wrap = modulo(i - 1, n) + 1
+end function wrap
+
+!===============================================================================
+
 logical function isalpha(c)
 
 	character, intent(in) :: c
