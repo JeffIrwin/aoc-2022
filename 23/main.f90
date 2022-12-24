@@ -9,6 +9,7 @@ module m
 
 #if 0
 	character(len = *), parameter :: finput = 'test-input.txt'
+	!character(len = *), parameter :: finput = 'tiny-input.txt'
 #else
 	character(len = *), parameter :: finput = 'input.txt'
 #endif
@@ -555,7 +556,8 @@ subroutine part2()
 			! do anything during this round (i.e. it stays in its current position)
 			if (count(l) == 1) then
 				prop(:,i) = pos(:,i)
-				cycle
+				!cycle
+				goto 100
 			end if
 
 			! Look in each of 4 directions and propose the first valid one
@@ -576,10 +578,12 @@ subroutine part2()
 				! If there is no other elf, propose moving in that direction
 				if (.not. any(l3)) then
 					prop(:,i) = pos(:,i) + dirs(:,idir)
-					exit
+					!exit
+					goto 100
 				end if
-
 			end do
+
+100		continue
 
 		end do  ! elf loop
 

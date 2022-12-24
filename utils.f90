@@ -22,10 +22,31 @@ contains
 
 !===============================================================================
 
-integer function wrap(i,n)
-	! Wrap i to range [1, n]
-	integer :: i, n
-	wrap = modulo(i - 1, n) + 1
+integer function wrap(i, n, n1)
+
+	! Wrap i to range [1, n], or [n, n1] with optional arg
+
+	integer :: i, n!, tmp
+	integer, optional :: n1
+
+	if (present(n1)) then
+
+		if (n1 < n) then
+			write(*,*) 'Error in wrap: range has negative width'
+			stop
+		end if
+
+		!tmp = i - n + 1
+		!tmp = modulo(tmp - 1, n1 - n + 1) + 1
+		!tmp = tmp + n - 1
+		!wrap = tmp
+
+		wrap = modulo(i - n, n1 - n + 1) + n
+
+	else
+		wrap = modulo(i - 1, n) + 1
+	end if
+
 end function wrap
 
 !===============================================================================
