@@ -45,3 +45,5 @@ The solution is printed to the console.
 | [20](20) | Permuting numbers in a circular list | 😅😅 |
 | [21](21) | Evaluating arithmetic expressions and symbolic algebra | 😅😅 |
 | [22](22) | Following a path with obstacles in 2D and projected 3D | 🥵🥵🥵 |
+| [23](23) | Implementing cellular automata | 😅😅* couldn't crack part2, probably some dump typo |
+| [24](24) | Finding the shortest path on a map with moving obstacles | 😅😅 |
