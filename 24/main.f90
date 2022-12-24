@@ -35,6 +35,7 @@ module m
 
 	! I'm making these global variables because I'm lazy
 	integer :: start(nd), end(nd), levelmin = -1, levelmax = 30!1000
+	integer, parameter :: tmax = 2048!512!256
 
 contains
 
@@ -179,7 +180,7 @@ subroutine readinput(map, nmap)
 	nx = len_trim(s)
 	rewind(iu)
 
-	print *, 'nx, ny = ', nx, ny
+	!print *, 'nx, ny = ', nx, ny
 
 	allocate(map(nbmax, nx, ny), nmap(nx, ny))
 	map = empty
@@ -228,106 +229,6 @@ end subroutine readinput
 
 !===============================================================================
 
-recursive subroutine dfs(map0, nmap0, expe0, level0)
-
-	integer, intent(in) :: expe0(nd), level0
-	integer, intent(in) :: map0(:,:,:), nmap0(:,:)
-
-	!********
-
-	integer :: expe(nd), level, i, nlocs, x, y
-	integer, allocatable :: map(:,:,:), nmap(:,:), locs(:,:)
-
-	! Destination reached
-	if (all(expe0 == end)) then
-		!print *, 'FOUND DESTINATION'
-		!print *, 'level0 = ', level0
-		!print *, ''
-
-		if (levelmin < 0 .or. level0 < levelmin) then
-			levelmin = level0
-			print *, 'levelmin = ', levelmin
-		end if
-
-		return
-
-	end if
-
-	! Don't recurse deeper than this to prevent infinite loops.  TODO what
-	! should the limit be?
-	if (level0 > levelmax .or. (levelmin > 0 .and. level0 > levelmin)) return
-
-	expe = expe0
-	map = map0
-	nmap = nmap0
-	level = level0 + 1
-
-	!print *, 'level ', level
-
-	call move_blizzards(map, nmap)
-
-	! Consider waiting in current location and search neighbors
-	nlocs = ndirs + 1
-	allocate(locs(nd, nlocs))
-	do i = 1, ndirs
-		locs(:,i) = expe0 + dirs(:,i)
-	end do
-	locs(:, nlocs) = expe0
-
-	! Explore
-	do i = 1, nlocs
-
-		x = locs(1,i)
-		y = locs(2,i)
-		expe = [x,y]
-
-		! Check bounds
-		if (.not. (1 <= x .and. x <= size(nmap,1) &
-		    .and.  1 <= y .and. y <= size(nmap,2))) then
-			cycle
-		end if
-
-		! We're allowed to revisit nodes.  It might be required as blizzards
-		! move around and force us to backtrack
-
-		! Don't move into walls or blizzards
-		if (map(1,x,y) /= empty) cycle
-
-		call dfs(map, nmap, expe, level)
-
-	end do
-
-end subroutine dfs
-
-!===============================================================================
-
-subroutine part1dfs()
-
-	integer :: isum, expe(nd)
-	integer, allocatable :: map(:,:,:), nmap(:,:)
-
-	isum = 0
-
-	call readinput(map, nmap)
-
-	! Initialize expedition location
-	expe = start
-
-	call printmap(map, nmap, expe)
-
-	!call move_blizzards(map, nmap)
-	!call printmap(map, nmap, start)
-
-	call dfs(map, nmap, expe, 0)
-	isum = levelmin
-
-	write(*,*) 'part1dfs = ', isum
-	write(*,*) ''
-
-end subroutine part1dfs
-
-!===============================================================================
-
 function get_map3(map, nmap, tmax) result(map3)
 
 	! Get a spacetime map of the blizzards' motion ahead of time
@@ -341,7 +242,7 @@ function get_map3(map, nmap, tmax) result(map3)
 	! Could be 1-byte to save RAM if needed
 	integer, allocatable :: map3(:,:,:)
 
-	print *, 'starting get_map3'
+	!print *, 'starting get_map3'
 
 	allocate(map3(size(nmap, 1), size(nmap, 2), tmax))
 	map3 = empty
@@ -361,32 +262,32 @@ function get_map3(map, nmap, tmax) result(map3)
 
 	end do
 
-	! Print, debug only
-	nx = size(nmap, 1)
-	ny = size(nmap, 2)
-	do i = 1, 3
-	print *, 'mapl ', i, ' = ', mapl(1,:,:)
-	do y = 1, ny
-		do x = 1, nx
-			if      (map3(x,y,i) == wall) then
-				write(*, '(a)', advance = 'no') '#'
-			else if (map3(x,y,i) == up) then
-				write(*, '(a)', advance = 'no') '^'
-			else if (map3(x,y,i) == down) then
-				write(*, '(a)', advance = 'no') 'v'
-			else if (map3(x,y,i) == left) then
-				write(*, '(a)', advance = 'no') '<'
-			else if (map3(x,y,i) == right) then
-				write(*, '(a)', advance = 'no') '>'
-			else! if (map3(...) == empty) then
-				write(*, '(a)', advance = 'no') '.'
-			end if
-		end do
-		write(*,*)
-	end do
-	write(*,*)
-	end do
-	write(*,*)
+	!! Print, debug only
+	!nx = size(nmap, 1)
+	!ny = size(nmap, 2)
+	!do i = 1, 3
+	!print *, 'mapl ', i, ' = ', mapl(1,:,:)
+	!do y = 1, ny
+	!	do x = 1, nx
+	!		if      (map3(x,y,i) == wall) then
+	!			write(*, '(a)', advance = 'no') '#'
+	!		else if (map3(x,y,i) == up) then
+	!			write(*, '(a)', advance = 'no') '^'
+	!		else if (map3(x,y,i) == down) then
+	!			write(*, '(a)', advance = 'no') 'v'
+	!		else if (map3(x,y,i) == left) then
+	!			write(*, '(a)', advance = 'no') '<'
+	!		else if (map3(x,y,i) == right) then
+	!			write(*, '(a)', advance = 'no') '>'
+	!		else! if (map3(...) == empty) then
+	!			write(*, '(a)', advance = 'no') '.'
+	!		end if
+	!	end do
+	!	write(*,*)
+	!end do
+	!write(*,*)
+	!end do
+	!write(*,*)
 
 end function get_map3
 
@@ -406,9 +307,9 @@ function dijkstra(map3, xyt0, xyend) result(dist)
 
 	logical, allocatable :: q(:,:,:)
 
-	print *, 'starting dijkstra'
-	print *, 'source xyt0 =', xyt0
-	print *, 'end xy      = ', xyend
+	!print *, 'starting dijkstra'
+	!print *, 'source xyt0 =', xyt0
+	!print *, 'end xy      = ', xyend
 
 	! Consider waiting in current location and search 4 neighbors
 	nlocs = ndirs + 1
@@ -418,15 +319,15 @@ function dijkstra(map3, xyt0, xyend) result(dist)
 	end do
 	locs(:, nlocs) = [0,0]
 
-	print *, 'nlocs = ', nlocs
-	print *, 'locs = '
-	print '(2i3)', locs
+	!print *, 'nlocs = ', nlocs
+	!print *, 'locs = '
+	!print '(2i3)', locs
 
 	nx = size(map3, 1)
 	ny = size(map3, 2)
 	nt = size(map3, 3)
 
-	print *, 'nx, ny = ', nx, ny
+	!print *, 'nx, ny = ', nx, ny
 
 	allocate(dist(nx, ny, nt))
 	allocate(prev(nst, nx, ny, nt))
@@ -489,20 +390,90 @@ function dijkstra(map3, xyt0, xyend) result(dist)
 		end do
 	end do
 
-	do i = 1, 20
-		write(*,*) 'Time ', i
-		do y = 1, ny
-			do x = 1, nx
-				write(*, '(i3)', advance = 'no') dist(x,y,i)
-			end do
-			write(*,*)
-		end do
-		write(*,*)
-	end do
-
-	print *, 'finished dijkstra'
+	!do i = 1, 20
+	!	write(*,*) 'Time ', i
+	!	do y = 1, ny
+	!		do x = 1, nx
+	!			write(*, '(i3)', advance = 'no') dist(x,y,i)
+	!		end do
+	!		write(*,*)
+	!	end do
+	!	write(*,*)
+	!end do
+	!print *, 'finished dijkstra'
 
 end function dijkstra
+
+!===============================================================================
+
+integer function dist_end(dist, end, t0)
+
+	integer :: i, end(nd), t0
+	integer :: dist(:,:,:)
+
+	! Find the first time index from t0 when the end location is reachable.  This
+	! is actually off-by-one after the first time but idgaf
+
+	i = t0
+	do while (abs(dist(end(1), end(2), i)) >= tmax)
+		i = i + 1
+		if (i > tmax) then
+			write(*,*) 'Error: end unreachable.  Increase maximum time'
+			stop
+		end if
+	end do
+	dist_end = dist(end(1), end(2), i)
+
+	!print *, 'dist_end = ', dist_end
+
+end function dist_end
+
+!===============================================================================
+
+subroutine part2()
+
+	! Use Dijkstra in 3D with regular valley map x, y, and time as the 3rd
+	! dimension.  Blizzards move deterministically, so this can be done
+
+	integer :: i, isum, x, y, t, expe(nst)!, dist
+	integer, allocatable :: map(:,:,:), nmap(:,:), map3(:,:,:), dist(:,:,:)
+
+	isum = 0
+
+	call readinput(map, nmap)
+
+	! Initialize expedition location at start location and start time 1
+	t = 1
+	expe = [start, t]
+
+	!print *, 'expe = ', expe
+	!call printmap(map, nmap, expe)
+
+	map3 = get_map3(map, nmap, tmax)
+
+	!********
+
+	! There
+	dist = dijkstra(map3, expe, end)
+	isum = isum + dist_end(dist, end, t)
+	t = isum
+
+	! Back
+	expe = [end, isum]
+	dist = dijkstra(map3, expe, start)
+	isum = isum + dist_end(dist, start, t) - 1
+	t = isum
+
+	! There again
+	expe = [start, isum]
+	dist = dijkstra(map3, expe, end)
+	isum = isum + dist_end(dist, end, t) - 1
+	t = isum
+
+	write(*,*) 'part2 = ', isum
+	write(*,*) ''
+
+end subroutine part2
 
 !===============================================================================
 
@@ -523,26 +494,25 @@ subroutine part1()
 	! Initialize expedition location at start location and start time 1
 	expe = [start, 1]
 
-	print *, 'expe = ', expe
-
-	call printmap(map, nmap, expe)
+	!print *, 'expe = ', expe
+	!call printmap(map, nmap, expe)
 
 	map3 = get_map3(map, nmap, tmax)
 
 	dist = dijkstra(map3, expe, end)
 
-	do i = 1, 20
-		write(*,*) 'Time ', i
-		do y = 1, size(nmap, 2)
-			do x = 1, size(nmap, 1)
-				write(*, '(i3)', advance = 'no') dist(x,y,i)
-			end do
-			write(*,*)
-		end do
-		write(*,*)
-	end do
+	!do i = 1, 20
+	!	write(*,*) 'Time ', i
+	!	do y = 1, size(nmap, 2)
+	!		do x = 1, size(nmap, 1)
+	!			write(*, '(i3)', advance = 'no') dist(x,y,i)
+	!		end do
+	!		write(*,*)
+	!	end do
+	!	write(*,*)
+	!end do
 
-	print *, 'dist(end) = ', dist(end(1), end(2), 1:20)
+	!print *, 'dist(end) = ', dist(end(1), end(2), 1:20)
 
 	! Find the first time index when the end location is reachable
 	i = 1
@@ -555,7 +525,7 @@ subroutine part1()
 	end do
 	isum = dist(end(1), end(2), i)
 
-	print *, 'end, i = ', end, i
+	!print *, 'end, i = ', end, i
 
 	write(*,*) 'part1 = ', isum
 	write(*,*) ''
@@ -576,9 +546,8 @@ program main
 	write(*,*) 'Input file = ', finput
 	write(*,*) ''
 
-	!call part1dfs()
 	call part1()
-	!call part2()
+	call part2()
 
 	write(*,*) 'Ending AOC main'
 	write(*,*) ''
