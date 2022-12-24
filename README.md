@@ -47,3 +47,5 @@ The solution is printed to the console.
 | [22](22) | Following a path with obstacles in 2D and projected 3D | 🥵🥵🥵 |
 | [23](23) | Implementing cellular automata | 😅😅* couldn't crack part2, probably some dump typo |
 | [24](24) | Finding the shortest path on a map with moving obstacles | 😅😅 |
+
+My difficulty ratings are obviously subjective.  What's hard for me might be easy for others.  Also, there is a path-dependence to the difficulty.  For example, I thought [day 7](7) was particularly hard compared to days 1-6, mostly because I had never implemented a general tree data structure in Fortran.  After that, I used trees in several other days (e.g. [day 13](13)).  Since I already had trees in my toolbelt, I didn't feel like that was as difficult anymore.
