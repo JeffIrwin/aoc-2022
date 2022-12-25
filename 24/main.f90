@@ -348,7 +348,10 @@ function dijkstra(map3, xyt0, xyend) result(dist)
 	! While q is not empty
 	do while (any(q))
 
-		! Vertex in q with min dist
+		! Vertex in q with min dist.  I think minloc() is the bottleneck for this
+		! problem, since dist is a large array.  This would be more efficient with
+		! dijkstra with a priority queue, or better yet, just use BFS since dijkstra
+		! is overly general and our graph is non-weighted (all edges are 1)
 		u = minloc(dist, q)
 
 		! Early return.  Is this optimal though?  Works for part1 :shrug:
