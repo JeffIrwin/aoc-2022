@@ -158,6 +158,8 @@ end function readcsv
 
 integer function readint(s, is)
 
+	! TODO: error handling
+
 	character(len = *), intent(in) :: s
 
 	integer, intent(inout) :: is
@@ -172,11 +174,13 @@ integer function readint(s, is)
 	do while (.not. (isnum(s(is:is)) .or. s(is:is) == '-') &
 			.and. is <= len_trim(s))
 		is = is + 1
+		if (is > len_trim(s)) exit
 	end do
 
 	is0 = is
-	do while ((isnum(s(is:is)) .or. s(is:is) == '-') .and. is <= len_trim(s))
+	do while ((isnum(s(is:is)) .or. s(is:is) == '-'))
 		is = is + 1
+		if (is > len_trim(s)) exit
 	end do
 
 	!print *, 'is0, is = ', is0, is
@@ -212,6 +216,33 @@ integer function countlines(f) result(n)
 	close(iu)
 
 end function countlines
+
+!===============================================================================
+
+integer function countchars(f) result(n)
+
+	! Count number of characters n in the first line of a text file named f
+
+	character(len = *), intent(in) :: f
+
+	character :: c
+
+	integer :: io, iu
+
+	open(file = f, newunit = iu, status = 'old')
+
+	n = 0
+
+	do
+		read(iu, '(a)', advance = 'no', iostat = io) c
+		if (io == iostat_end) exit
+		if (io == iostat_eor) exit
+		n = n + 1
+	end do
+
+	close(iu)
+
+end function countchars
 
 !===============================================================================
 

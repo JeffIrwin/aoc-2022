@@ -23,8 +23,6 @@ contains
 subroutine execute(prog)
 
 	! Execute an opcode program
-	!
-	! TODO: move into an intcode module
 
 	integer, intent(inout) :: prog(0:)
 
