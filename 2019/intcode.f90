@@ -37,6 +37,7 @@ subroutine interpret(prog, inputs, outputs)
 	!********
 
 	integer :: inst, ip, ii, io, i1, i2, i3, opcode, ninst
+	integer, allocatable :: p(:)
 
 	! Instruction pointer
 	ip = 0
@@ -165,15 +166,17 @@ subroutine interpret(prog, inputs, outputs)
 		else if (opcode == eq) then
 			ninst = 4
 
-			i1 = prog(ip+1)
-			i2 = prog(ip+2)
-			i3 = prog(ip+3)
+			!i1 = prog(ip+1)
+			!i2 = prog(ip+2)
+			!i3 = prog(ip+3)
+			!if (mod(inst /  100, 10) == 0) i1 = prog(i1)
+			!if (mod(inst / 1000, 10) == 0) i2 = prog(i2)
+			!prog(i3) = 0
+			!if (i1 == i2) prog(i3) = 1
 
-			if (mod(inst /  100, 10) == 0) i1 = prog(i1)
-			if (mod(inst / 1000, 10) == 0) i2 = prog(i2)
-
-			prog(i3) = 0
-			if (i1 == i2) prog(i3) = 1
+			p = get_pars()
+			prog(p(3)) = 0
+			if (p(1) == p(2)) prog(p(3)) = 1
 
 		else
 
@@ -190,6 +193,34 @@ subroutine interpret(prog, inputs, outputs)
 
 	! Trim
 	outputs = outputs(0: io - 1)
+
+contains
+
+!===============================================================================
+
+!function get_pars(prog, ip, ninst) result(pars)
+function get_pars() result(pars)
+
+	! Get the parameters for the instruction at ip in program prog.  Handle
+	! immediate vs position mode
+
+	!integer :: prog(:), ip, ninst
+	integer, allocatable :: pars(:)
+	integer :: i, div
+	integer, parameter :: base = 10
+
+	div = base ** 2
+
+	allocate(pars(ninst - 1))
+
+	! The opcode is at i=0, so start the loop at 1
+	do i = 1, ninst - 1
+		pars(i) = prog(ip + i)
+		if (mod(inst / div, base) == 0) pars(i) = prog( pars(i) )
+		div = div * base
+	end do
+
+end function get_pars
 
 end subroutine interpret
 
