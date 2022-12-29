@@ -3,6 +3,7 @@
 
 module m
 
+	use intcode
 	use utils
 
 	implicit none
@@ -13,106 +14,17 @@ module m
 	character(len = *), parameter :: finput = 'input.txt'
 #endif
 
-	! opcodes
-	integer, parameter :: add = 1, mul = 2, finish = 99
-
 contains
-
-!===============================================================================
-
-subroutine execute(prog)
-
-	! Execute an opcode program
-
-	integer, intent(inout) :: prog(0:)
-
-	!********
-
-	integer :: ip, i1, i2, i3, opcode, ninst
-
-	! Instruction pointer
-	ip = 0
-
-	do
-		opcode = prog(ip)
-		!print *, 'opcode = ', opcode
-
-		! Number of values in an instruction
-		ninst = 1
-
-		if (opcode == finish) then
-
-			ninst = 1
-			exit
-
-		else if (opcode == add) then
-			ninst = 4
-
-			! Parameter addresses
-			i1 = prog(ip+1)
-			i2 = prog(ip+2)
-			i3 = prog(ip+3)
-
-			prog(i3) = prog(i1) + prog(i2)
-
-		else if (opcode == mul) then
-			ninst = 4
-
-			i1 = prog(ip+1)
-			i2 = prog(ip+2)
-			i3 = prog(ip+3)
-
-			prog(i3) = prog(i1) * prog(i2)
-
-		end if
-
-		ip = ip + ninst
-	end do
-
-end subroutine execute
 
 !===============================================================================
 
 subroutine part2()
 
-	character :: s*1024
+	integer :: nprog, noun, verb
+	integer, allocatable :: prog0(:), prog(:), outputs(:)
 
-	integer, parameter :: nprog_max = 1024
-
-	integer :: i, iu, io, is, isum, nprog, noun, verb
-	integer :: prog0(0: nprog_max - 1)
-	integer, allocatable :: prog(:)
-
-	open(file = finput, newunit = iu, status = 'old')
-
-	isum = 0
-
-	! Read opcodes into an array
-	!
-	! TODO: make reading function.  No fixed capacity
-
-	read(iu, '(a)', iostat = io) s
-	!if (io == iostat_end) exit
-
-	!print *, 's = ', trim(s)
-
-	is = 1
-	i = 0
-	do while (is < len_trim(s))
-
-		if (i >= nprog_max) then
-			write(*,*) 'Error: program overflow'
-			stop
-		end if
-
-		prog0(i) = readint(s, is)
-		i = i + 1
-
-	end do
-	nprog = i
-
-	close(iu)
-
+	call readprog(finput, prog0)
+	nprog = size(prog0)
 	allocate(prog(0: nprog - 1))
 
 	do noun = 0, 99
@@ -127,8 +39,8 @@ subroutine part2()
 		prog(1) = noun
 		prog(2) = verb
 
-		! Execute opcodes
-		call execute(prog)
+		! Execute (technically, interpret) opcodes
+		call interpret(prog, [0], outputs)
 
 		if (prog(0) == 19690720) then
 			!print *, 'found'
@@ -149,40 +61,9 @@ end subroutine part2
 
 subroutine part1()
 
-	character :: s*1024
+	integer, allocatable :: prog(:), outputs(:)
 
-	integer, parameter :: nprog_max = 1024
-
-	integer :: i, iu, io, is, isum, nprog
-	integer :: prog(0: nprog_max - 1)
-
-	open(file = finput, newunit = iu, status = 'old')
-
-	isum = 0
-
-	! Read opcodes into an array
-
-	read(iu, '(a)', iostat = io) s
-	!if (io == iostat_end) exit
-
-	!print *, 's = ', trim(s)
-
-	is = 1
-	i = 0
-	do while (is < len_trim(s))
-
-		if (i >= nprog_max) then
-			write(*,*) 'Error: program overflow'
-			stop
-		end if
-
-		prog(i) = readint(s, is)
-		i = i + 1
-
-	end do
-	nprog = i
-
-	close(iu)
+	call readprog(finput, prog)
 
 	! Special instuctions for day 2
 	prog(1) = 12
@@ -190,7 +71,7 @@ subroutine part1()
 
 	!print *, 'prog = ', prog(0: nprog - 1)
 
-	call execute(prog)
+	call interpret(prog, [0], outputs)
 
 	!print *, 'prog = ', prog(0: nprog - 1)
 

@@ -28,7 +28,7 @@ subroutine interpret(prog, inputs, outputs)
 
 	! Interpret an intcode program prog with inputs
 	!
-	! TODO: add debug arg
+	! TODO: add optional debug arg.  Should inputs/outputs be optional?
 
 	integer, intent(inout) :: prog(0:)
 	integer, intent(in) :: inputs(0:)
@@ -55,7 +55,8 @@ subroutine interpret(prog, inputs, outputs)
 		!print *, 'opcode = ', opcode
 		!print *, 'inst = ', inst
 
-		! Number of values in an instruction
+		! Number of values in an instruction.  Only initialized here to
+		! safeguard against an infinite loop
 		ninst  = 1
 		nwrite = 0
 
@@ -85,7 +86,8 @@ subroutine interpret(prog, inputs, outputs)
 			p = get_pars()
 
 			if (ii >= size(inputs)) then
-				write(*, '(a)') 'Error in intcode::interpret(): reached end of inputs'
+				write(*, '(a)') 'Error in intcode::interpret():' &
+						//' reached end of inputs'
 				stop
 			end if
 
@@ -99,7 +101,8 @@ subroutine interpret(prog, inputs, outputs)
 
 			! TODO: growable array
 			if (io >= size(outputs)) then
-				write(*, '(a)') 'Error in intcode::interpret(): reached end of outputs'
+				write(*, '(a)') 'Error in intcode::interpret():' &
+						//' reached end of outputs'
 				stop
 			end if
 
@@ -144,8 +147,8 @@ subroutine interpret(prog, inputs, outputs)
 
 		else
 
-			write(*, '(a,i0,a)') 'Error in intcode::interpret(): unknown opcode "', &
-					opcode, '"'
+			write(*, '(a,i0,a)') 'Error in intcode::interpret():' &
+					//' unknown opcode "', opcode, '"'
 			stop
 
 		end if
@@ -165,8 +168,12 @@ contains
 function get_pars() result(pars)
 
 	! Get the parameters (arguments) for the instruction at ip in program prog.
-	! Handle immediate mode vs position mode.  Assume write args are always at the
-	! end
+	! Handle immediate mode vs position mode.  Assume write args are always at
+	! the end
+	!
+	! Unlike most other arrays in this interpreter, the result pars array is
+	! a Fortran default 1-based array.  You can think of pars(0) as the
+	! inst/opcode, just like argv[0] is the command (not an argument) in C.
 
 	integer, allocatable :: pars(:)
 	integer :: i, div
@@ -183,8 +190,8 @@ function get_pars() result(pars)
 		pars(i) = prog(ip + i)
 
 		if (i < ninst - nwrite .and. mod(inst / div, base) == 0) then
-			! Output (write) parameters are always in position mode, so leave them
-			! as an index
+			! Output (write) parameters are always in position mode, so leave
+			! them as an index for use in caller
 			pars(i) = prog( pars(i) )
 		end if
 
