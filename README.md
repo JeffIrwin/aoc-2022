@@ -28,6 +28,7 @@ My difficulty ratings are obviously subjective.  What's hard for me might be eas
 | Day | Description | Difficulty |
 |-----|-------------|------------|
 |   [2](2019/2) | Intcode: add, multiply, and finish | 😀 |
+|   [5](2019/5) | Intcode: input, output, and parameter modes | |
 
 ### 2022
 

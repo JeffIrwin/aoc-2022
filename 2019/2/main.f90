@@ -16,10 +16,62 @@ module m
 	! opcodes
 	integer, parameter :: add = 1, mul = 2, finish = 99
 
-	! Number of instructions in an opcode and its inputs
-	integer, parameter :: ninst = 4
-
 contains
+
+!===============================================================================
+
+subroutine execute(prog)
+
+	! Execute an opcode program
+	!
+	! TODO: move into an intcode module
+
+	integer, intent(inout) :: prog(0:)
+
+	!********
+
+	integer :: ip, i1, i2, i3, opcode, ninst
+
+	! Instruction pointer
+	ip = 0
+
+	do
+		opcode = prog(ip)
+		!print *, 'opcode = ', opcode
+
+		! Number of values in an instruction
+		ninst = 1
+
+		if (opcode == finish) then
+
+			ninst = 1
+			exit
+
+		else if (opcode == add) then
+			ninst = 4
+
+			! Parameter addresses
+			i1 = prog(ip+1)
+			i2 = prog(ip+2)
+			i3 = prog(ip+3)
+
+			prog(i3) = prog(i1) + prog(i2)
+
+		else if (opcode == mul) then
+			ninst = 4
+
+			i1 = prog(ip+1)
+			i2 = prog(ip+2)
+			i3 = prog(ip+3)
+
+			prog(i3) = prog(i1) * prog(i2)
+
+		end if
+
+		ip = ip + ninst
+	end do
+
+end subroutine execute
 
 !===============================================================================
 
@@ -38,6 +90,8 @@ subroutine part2()
 	isum = 0
 
 	! Read opcodes into an array
+	!
+	! TODO: make reading function.  No fixed capacity
 
 	read(iu, '(a)', iostat = io) s
 	!if (io == iostat_end) exit
@@ -65,9 +119,11 @@ subroutine part2()
 
 	do noun = 0, 99
 	do verb = 0, 99
-
-		prog = prog0(0: nprog - 1)
 		!print *, 'noun, verb = ', noun, verb
+
+		! Initialize memory to the progam's values.  TODO: do this inside execute()
+		! with a local prog variable?
+		prog = prog0(0: nprog - 1)
 
 		! Special instuctions for day 2
 		prog(1) = noun
@@ -90,52 +146,6 @@ subroutine part2()
 	write(*,*) ''
 
 end subroutine part2
-
-!===============================================================================
-
-subroutine execute(prog)
-
-	! Execute an opcode program
-
-	integer, intent(inout) :: prog(0:)
-
-	!********
-
-	integer :: ip, i1, i2, i3
-
-	! Instruction pointer
-	ip = 0
-
-	do
-		!print *, 'op = ', prog(ip)
-
-		if (prog(ip) == finish) then
-
-			exit
-
-		else if (prog(ip) == add) then
-
-			! Parameter addresses
-			i1 = prog(ip+1)
-			i2 = prog(ip+2)
-			i3 = prog(ip+3)
-
-			prog(i3) = prog(i1) + prog(i2)
-
-		else if (prog(ip) == mul) then
-
-			i1 = prog(ip+1)
-			i2 = prog(ip+2)
-			i3 = prog(ip+3)
-
-			prog(i3) = prog(i1) * prog(i2)
-
-		end if
-
-		ip = ip + ninst
-	end do
-
-end subroutine execute
 
 !===============================================================================
 
