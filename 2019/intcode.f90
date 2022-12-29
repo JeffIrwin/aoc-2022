@@ -36,7 +36,7 @@ subroutine interpret(prog, inputs, outputs)
 
 	!********
 
-	integer :: inst, ip, ii, io, i1, i2, i3, opcode, ninst
+	integer :: inst, ip, ii, io, i1, i2, i3, opcode, ninst, nwrite
 	integer, allocatable :: p(:)
 
 	! Instruction pointer
@@ -56,15 +56,18 @@ subroutine interpret(prog, inputs, outputs)
 		!print *, 'inst = ', inst
 
 		! Number of values in an instruction
-		ninst = 1
+		ninst  = 1
+		nwrite = 0
 
 		if (opcode == finish) then
 
-			ninst = 1
+			ninst  = 1
+			nwrite = 0
 			exit
 
 		else if (opcode == add) then
-			ninst = 4
+			ninst  = 4
+			nwrite = 1
 
 			! Parameter addresses.  TODO: refactor
 			i1 = prog(ip+1)
@@ -80,7 +83,8 @@ subroutine interpret(prog, inputs, outputs)
 			prog(i3) = i1 + i2
 
 		else if (opcode == mul) then
-			ninst = 4
+			ninst  = 4
+			nwrite = 1
 
 			i1 = prog(ip+1)
 			i2 = prog(ip+2)
@@ -93,7 +97,8 @@ subroutine interpret(prog, inputs, outputs)
 			prog(i3) = i1 * i2
 
 		else if (opcode == input) then
-			ninst = 2
+			ninst  = 2
+			nwrite = 1
 
 			i1 = prog(ip+1)
 
@@ -106,7 +111,8 @@ subroutine interpret(prog, inputs, outputs)
 			ii = ii + 1
 
 		else if (opcode == output) then
-			ninst = 2
+			ninst  = 2
+			nwrite = 0
 
 			i1 = prog(ip+1)
 
@@ -122,7 +128,8 @@ subroutine interpret(prog, inputs, outputs)
 			io = io + 1
 
 		else if (opcode == jnz) then
-			ninst = 3
+			ninst  = 3
+			nwrite = 0
 
 			i1 = prog(ip+1)
 			i2 = prog(ip+2)
@@ -137,7 +144,8 @@ subroutine interpret(prog, inputs, outputs)
 			end if
 
 		else if (opcode == jz) then
-			ninst = 3
+			ninst  = 3
+			nwrite = 0
 
 			i1 = prog(ip+1)
 			i2 = prog(ip+2)
@@ -151,20 +159,24 @@ subroutine interpret(prog, inputs, outputs)
 			end if
 
 		else if (opcode == lt) then
-			ninst = 4
+			ninst  = 4
+			nwrite = 1
 
-			i1 = prog(ip+1)
-			i2 = prog(ip+2)
-			i3 = prog(ip+3)
+			!i1 = prog(ip+1)
+			!i2 = prog(ip+2)
+			!i3 = prog(ip+3)
+			!if (mod(inst /  100, 10) == 0) i1 = prog(i1)
+			!if (mod(inst / 1000, 10) == 0) i2 = prog(i2)
+			!prog(i3) = 0
+			!if (i1 < i2) prog(i3) = 1
 
-			if (mod(inst /  100, 10) == 0) i1 = prog(i1)
-			if (mod(inst / 1000, 10) == 0) i2 = prog(i2)
-
-			prog(i3) = 0
-			if (i1 < i2) prog(i3) = 1
+			p = get_pars()
+			prog(p(3)) = 0
+			if (p(1) < p(2)) prog(p(3)) = 1
 
 		else if (opcode == eq) then
-			ninst = 4
+			ninst  = 4
+			nwrite = 1
 
 			!i1 = prog(ip+1)
 			!i2 = prog(ip+2)
@@ -173,6 +185,16 @@ subroutine interpret(prog, inputs, outputs)
 			!if (mod(inst / 1000, 10) == 0) i2 = prog(i2)
 			!prog(i3) = 0
 			!if (i1 == i2) prog(i3) = 1
+
+			!p = [0,0,0]
+			!p(1) = prog(ip+1)
+			!p(2) = prog(ip+2)
+			!p(3) = prog(ip+3)
+			!if (mod(inst /  100, 10) == 0) p(1) = prog(p(1))
+			!if (mod(inst / 1000, 10) == 0) p(2) = prog(p(2))
+			!!if (mod(inst / 10000,10) == 0) p(3) = prog(p(3))
+			!prog(p(3)) = 0
+			!if (p(1) == p(2)) prog(p(3)) = 1
 
 			p = get_pars()
 			prog(p(3)) = 0
@@ -209,14 +231,23 @@ function get_pars() result(pars)
 	integer :: i, div
 	integer, parameter :: base = 10
 
+	!print *, 'inst = ', inst
+
 	div = base ** 2
 
+	if (allocated(pars)) deallocate(pars)
 	allocate(pars(ninst - 1))
 
-	! The opcode is at i=0, so start the loop at 1
+	! The opcode is at i=0, so start the loop at 1.
 	do i = 1, ninst - 1
 		pars(i) = prog(ip + i)
-		if (mod(inst / div, base) == 0) pars(i) = prog( pars(i) )
+
+		if (i < ninst - nwrite .and. mod(inst / div, base) == 0) then
+			! Output (write) parameters are ! always in position mode, so leave them
+			! as an index
+			pars(i) = prog( pars(i) )
+		end if
+
 		div = div * base
 	end do
 
