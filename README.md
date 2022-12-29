@@ -1,7 +1,7 @@
 
-# aoc-2022
+# Advent of Code
 
-Advent of code 2022 in Fortran
+Advent of code (more than just 2022) in Fortran
 
 https://adventofcode.com/
 
