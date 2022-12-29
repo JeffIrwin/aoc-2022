@@ -37,8 +37,8 @@ $fc --version
 #
 ##********
 
-$fc -o main ../utils.f90 main.f90 $flags
-#$fc -o main $fmlib/fmlib.a ../utils.f90 main.f90 $flags
+$fc -o main ../../utils.f90 main.f90 $flags
+#$fc -o main $fmlib/fmlib.a ../../utils.f90 main.f90 $flags
 
 #===============================================================================
 
