@@ -16,8 +16,8 @@ module m
 	! opcodes
 	integer, parameter :: add = 1, mul = 2, finish = 99
 
-	! Number of ints in an opcode and its inputs
-	integer, parameter :: nint_op = 4
+	! Number of instructions in an opcode and its inputs
+	integer, parameter :: ninst = 4
 
 contains
 
@@ -29,9 +29,8 @@ subroutine part2()
 
 	integer, parameter :: nprog_max = 1024
 
-	integer :: i, iu, io, is, isum, nprog, iop, &
-			i1, i2, i3, noun, verb
-	integer(kind = 4) :: prog0(0: nprog_max - 1)
+	integer :: i, iu, io, is, isum, nprog, noun, verb
+	integer :: prog0(0: nprog_max - 1)
 	integer, allocatable :: prog(:)
 
 	open(file = finput, newunit = iu, status = 'old')
@@ -43,7 +42,7 @@ subroutine part2()
 	read(iu, '(a)', iostat = io) s
 	!if (io == iostat_end) exit
 
-	print *, 's = ', trim(s)
+	!print *, 's = ', trim(s)
 
 	is = 1
 	i = 0
@@ -66,53 +65,21 @@ subroutine part2()
 
 	do noun = 0, 99
 	do verb = 0, 99
-	!noun = 12
-	!verb = 2
 
-	prog = prog0(0: nprog - 1)
-	print *, 'noun, verb = ', noun, verb
+		prog = prog0(0: nprog - 1)
+		!print *, 'noun, verb = ', noun, verb
 
-	! Special instuctions for day 2
-	prog(1) = noun
-	prog(2) = verb
+		! Special instuctions for day 2
+		prog(1) = noun
+		prog(2) = verb
 
-	!print *, 'prog = ', prog(0: nprog - 1)
+		! Execute opcodes
+		call execute(prog)
 
-	! Execute opcodes
-	iop = 0
-	do
-		!print *, 'op = ', prog(iop)
-
-		if (prog(iop) == finish) then
-
-			exit
-
-		else if (prog(iop) == add) then
-
-			i1 = prog(iop+1)
-			i2 = prog(iop+2)
-			i3 = prog(iop+3)
-
-			prog(i3) = prog(i1) + prog(i2)
-
-		else if (prog(iop) == mul) then
-
-			i1 = prog(iop+1)
-			i2 = prog(iop+2)
-			i3 = prog(iop+3)
-
-			prog(i3) = prog(i1) * prog(i2)
-
+		if (prog(0) == 19690720) then
+			!print *, 'found'
+			goto 100
 		end if
-
-		iop = iop + 4
-	end do
-
-	!print *, 'prog = ', prog(0: nprog - 1)
-	if (prog(0) == 19690720) then
-		print *, 'found'
-		goto 100
-	end if
 
 	end do
 	end do
@@ -126,15 +93,60 @@ end subroutine part2
 
 !===============================================================================
 
+subroutine execute(prog)
+
+	! Execute an opcode program
+
+	integer, intent(inout) :: prog(0:)
+
+	!********
+
+	integer :: ip, i1, i2, i3
+
+	! Instruction pointer
+	ip = 0
+
+	do
+		!print *, 'op = ', prog(ip)
+
+		if (prog(ip) == finish) then
+
+			exit
+
+		else if (prog(ip) == add) then
+
+			! Parameter addresses
+			i1 = prog(ip+1)
+			i2 = prog(ip+2)
+			i3 = prog(ip+3)
+
+			prog(i3) = prog(i1) + prog(i2)
+
+		else if (prog(ip) == mul) then
+
+			i1 = prog(ip+1)
+			i2 = prog(ip+2)
+			i3 = prog(ip+3)
+
+			prog(i3) = prog(i1) * prog(i2)
+
+		end if
+
+		ip = ip + ninst
+	end do
+
+end subroutine execute
+
+!===============================================================================
+
 subroutine part1()
 
 	character :: s*1024
 
 	integer, parameter :: nprog_max = 1024
 
-	integer :: i, iu, io, is, isum, nprog, iop, &
-			i1, i2, i3
-	integer(kind = 4) :: prog(0: nprog_max - 1)
+	integer :: i, iu, io, is, isum, nprog
+	integer :: prog(0: nprog_max - 1)
 
 	open(file = finput, newunit = iu, status = 'old')
 
@@ -145,7 +157,7 @@ subroutine part1()
 	read(iu, '(a)', iostat = io) s
 	!if (io == iostat_end) exit
 
-	print *, 's = ', trim(s)
+	!print *, 's = ', trim(s)
 
 	is = 1
 	i = 0
@@ -168,39 +180,11 @@ subroutine part1()
 	prog(1) = 12
 	prog(2) =  2
 
-	print *, 'prog = ', prog(0: nprog - 1)
+	!print *, 'prog = ', prog(0: nprog - 1)
 
-	! Execute opcodes
-	iop = 0
-	do
-		print *, 'op = ', prog(iop)
+	call execute(prog)
 
-		if (prog(iop) == finish) then
-
-			exit
-
-		else if (prog(iop) == add) then
-
-			i1 = prog(iop+1)
-			i2 = prog(iop+2)
-			i3 = prog(iop+3)
-
-			prog(i3) = prog(i1) + prog(i2)
-
-		else if (prog(iop) == mul) then
-
-			i1 = prog(iop+1)
-			i2 = prog(iop+2)
-			i3 = prog(iop+3)
-
-			prog(i3) = prog(i1) * prog(i2)
-
-		end if
-
-		iop = iop + 4
-	end do
-
-	print *, 'prog = ', prog(0: nprog - 1)
+	!print *, 'prog = ', prog(0: nprog - 1)
 
 	write(*,*) 'part1 = ', prog(0)
 	write(*,*) ''
