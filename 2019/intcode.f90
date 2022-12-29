@@ -36,7 +36,7 @@ subroutine interpret(prog, inputs, outputs)
 
 	!********
 
-	integer :: inst, ip, ii, io, i1, i2, i3, opcode, ninst, p1, p2, p3
+	integer :: inst, ip, ii, io, i1, i2, i3, opcode, ninst
 
 	! Instruction pointer
 	ip = 0
@@ -52,7 +52,7 @@ subroutine interpret(prog, inputs, outputs)
 		opcode = mod(inst, 100)
 
 		!print *, 'opcode = ', opcode
-		print *, 'inst = ', inst
+		!print *, 'inst = ', inst
 
 		! Number of values in an instruction
 		ninst = 1
@@ -186,13 +186,15 @@ subroutine interpret(prog, inputs, outputs)
 		ip = ip + ninst
 	end do
 
-	print *, 'outputs = ', outputs(0: io - 1)
+	!print *, 'outputs = ', outputs(0: io - 1)
+
+	! Trim
+	outputs = outputs(0: io - 1)
 
 end subroutine interpret
 
 !===============================================================================
 
-!function readprog(finput) result(prog)
 subroutine readprog(finput, prog)
 
 	! Read an intcode program prog from a file finput
@@ -215,7 +217,7 @@ subroutine readprog(finput, prog)
 	! backspace, then read)
 
 	ns = countchars(finput)
-	print *, 'ns = ', ns
+	!print *, 'ns = ', ns
 
 	open(file = finput, newunit = iu, status = 'old')
 
@@ -249,7 +251,6 @@ subroutine readprog(finput, prog)
 	end do
 	!print *, 'prog = ', prog
 
-!end function readprog
 end subroutine readprog
 
 !===============================================================================

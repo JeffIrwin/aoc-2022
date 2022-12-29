@@ -20,23 +20,14 @@ contains
 
 subroutine part2()
 
-	character :: s*256
-
-	integer :: iu, io, isum
 	integer, allocatable :: prog(:), inputs(:), outputs(:)
 
-	isum = 0
-
-	!prog = readprog(finput)
 	call readprog(finput, prog)
-	print *, 'prog(0) = ', prog(0)
 
-	allocate(inputs(0:0))
-	inputs(0) = 5
-
+	inputs = [5]
 	call interpret(prog, inputs, outputs)
 
-	write(*,*) 'part2 = ', isum
+	write(*,*) 'part2 = ', outputs(ubound(outputs))
 	write(*,*) ''
 
 end subroutine part2
@@ -45,23 +36,15 @@ end subroutine part2
 
 subroutine part1()
 
-	character :: s*256
-
-	integer :: iu, io, isum
 	integer, allocatable :: prog(:), inputs(:), outputs(:)
 
-	isum = 0
-
-	!prog = readprog(finput)
 	call readprog(finput, prog)
-	print *, 'prog(0) = ', prog(0)
+	!print *, 'prog(0) = ', prog(0)
 
-	allocate(inputs(0:0))
-	inputs(0) = 1
-
+	inputs = [1]
 	call interpret(prog, inputs, outputs)
 
-	write(*,*) 'part1 = ', isum
+	write(*,*) 'part1 = ', outputs(ubound(outputs))
 	write(*,*) ''
 
 end subroutine part1
