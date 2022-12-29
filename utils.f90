@@ -219,17 +219,34 @@ end function countlines
 
 !===============================================================================
 
-integer function countchars(f) result(n)
+function readline(iu) result(s)
 
-	! Count number of characters n in the first line of a text file named f
+	! Read a whole line (any length) as string s from file unit iu
 
-	character(len = *), intent(in) :: f
+	character(len = :), allocatable :: s
+
+	integer :: io, iu, ns
+
+	ns = countchars(iu)
+	!print *, 'ns = ', ns
+
+	allocate(character(len = ns) :: s)
+
+	!read(iu, '(a)', iostat = io, advance = 'no') s
+	read(iu, '(a)', iostat = io) s
+	!print *, 's = ', s
+
+end function readline
+
+!===============================================================================
+
+integer function countchars(iu) result(n)
+
+	! Count number of characters n in the next line of a file unit iu
 
 	character :: c
 
 	integer :: io, iu
-
-	open(file = f, newunit = iu, status = 'old')
 
 	n = 0
 
@@ -240,7 +257,7 @@ integer function countchars(f) result(n)
 		n = n + 1
 	end do
 
-	close(iu)
+	backspace(iu)
 
 end function countchars
 

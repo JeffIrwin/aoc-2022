@@ -209,33 +209,23 @@ subroutine readprog(finput, prog)
 
 	character(len = :), allocatable :: s
 
-	integer :: nprog, junk, io, iu, ns, is, i
+	integer :: nprog, junk, iu, is, i
 
 	nprog = 0
 
-	! TODO: make a utils fn to readline() (without re-opening, countchars(),
-	! backspace, then read)
-
-	ns = countchars(finput)
-	!print *, 'ns = ', ns
-
 	open(file = finput, newunit = iu, status = 'old')
-
-	allocate(character(len = ns) :: s)
-
-	read(iu, '(a)', iostat = io, advance = 'no') s
-	!print *, 's = ', s
+	s = readline(iu)
+	close(iu)
 
 	! Count ints
 	is = 1
-	do while (is < ns)
+	do while (is < len_trim(s))
 
 		junk = readint(s, is)
 		nprog = nprog + 1
 
 		!print *, 'nprog = ', nprog
 		!print *, 'junk = ', junk
-		!print *, 'is, ns = ', is, ns
 		!print *, ''
 
 	end do
@@ -245,7 +235,7 @@ subroutine readprog(finput, prog)
 	allocate(prog(0: nprog - 1))
 	is = 1
 	i = 0
-	do while (is < ns)
+	do while (is < len_trim(s))
 		prog(i) = readint(s, is)
 		i = i + 1
 	end do
