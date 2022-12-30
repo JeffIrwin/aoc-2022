@@ -87,7 +87,7 @@ subroutine set_inputs(ic, inputs)
 
 	! Would it make more sense to have a push_inputs fn?  Alternatively, old
 	! inputs are never reused, so we could reset ii to 0 and only use the new
-	! inputs
+	! inputs.  Similarly, outputs could be wiped between interpret() invocations
 
 	class(intcode), intent(inout) :: ic
 
@@ -146,21 +146,21 @@ subroutine interpret(ic)
 		else if (opcode == add) then
 			ninst  = 4
 			nwrite = 1
-			p = get_pars()
+			p = get_parameters()
 
 			ic%prog(p(3)) = p(1) + p(2)
 
 		else if (opcode == mul) then
 			ninst  = 4
 			nwrite = 1
-			p = get_pars()
+			p = get_parameters()
 
 			ic%prog(p(3)) = p(1) * p(2)
 
 		else if (opcode == input) then
 			ninst  = 2
 			nwrite = 1
-			p = get_pars()
+			p = get_parameters()
 
 			if (ic%ii >= size(ic%inputs)) then
 				!write(*, '(a)') 'Error in intcode::interpret():' &
@@ -175,7 +175,7 @@ subroutine interpret(ic)
 		else if (opcode == output) then
 			ninst  = 2
 			nwrite = 0
-			p = get_pars()
+			p = get_parameters()
 
 			! TODO: growable array
 			if (ic%io >= size(ic%outputs)) then
@@ -190,7 +190,7 @@ subroutine interpret(ic)
 		else if (opcode == jnz) then
 			ninst  = 3
 			nwrite = 0
-			p = get_pars()
+			p = get_parameters()
 
 			if (p(1) /= 0) then
 				ic%ip = p(2)
@@ -200,7 +200,7 @@ subroutine interpret(ic)
 		else if (opcode == jz) then
 			ninst  = 3
 			nwrite = 0
-			p = get_pars()
+			p = get_parameters()
 
 			if (p(1) == 0) then
 				ic%ip = p(2)
@@ -210,7 +210,7 @@ subroutine interpret(ic)
 		else if (opcode == lt) then
 			ninst  = 4
 			nwrite = 1
-			p = get_pars()
+			p = get_parameters()
 
 			ic%prog(p(3)) = 0
 			if (p(1) < p(2)) ic%prog(p(3)) = 1
@@ -218,7 +218,7 @@ subroutine interpret(ic)
 		else if (opcode == eq) then
 			ninst  = 4
 			nwrite = 1
-			p = get_pars()
+			p = get_parameters()
 
 			ic%prog(p(3)) = 0
 			if (p(1) == p(2)) ic%prog(p(3)) = 1
@@ -239,14 +239,15 @@ subroutine interpret(ic)
 	if (ic%debug > 0) print *, 'stat = ', ic%stat
 	if (ic%debug > 0) print *, ''
 
-	!! Trim. TODO?
+	!! Trim?  Don't do it when invoking interpret() multiple times with pauses
+	!! between new inputs
 	!ic%outputs = ic%outputs(0: ic%io - 1)
 
 contains
 
 !********
 
-function get_pars() result(pars)
+function get_parameters() result(pars)
 
 	! Get the parameters (arguments) for the instruction at ip in program prog.
 	! Handle immediate mode vs position mode.  Assume write args are always at
@@ -279,7 +280,7 @@ function get_pars() result(pars)
 		div = div * base
 	end do
 
-end function get_pars
+end function get_parameters
 
 !********
 

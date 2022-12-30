@@ -35,51 +35,49 @@ subroutine part2()
 
 	logical :: next
 
-	print *, 'starting part2'
+	!print *, 'starting part2'
 
 	prog0 = readprog(finput2)
 
 	maxout = -huge(maxout)
 
 	phases = [(i, i = 5, 2*namps - 1)]
-	!phases = [9, 8, 7, 6, 5] ! TODO
-	!phases = [(i, i = 0, namps - 1)]
 
 	next = .true.
 	do while (next)
-		print *, 'phases = ', phases
+		!print *, 'phases = ', phases
 
 		! First loop: supply initial 0 input and phase settings
 
 		! Amplifier A
 		pa = new(prog0, [phases(1), 0])
-		pa%debug = 1
+		!pa%debug = 1
 		call pa%interpret()
 
 		! Amplifier B
 		pb = new(prog0, [phases(2), pa%outputs(0)])
-		pb%debug = 1
+		!pb%debug = 1
 		call pb%interpret()
 
 		! Amplifier C
 		pc = new(prog0, [phases(3), pb%outputs(0)])
-		pc%debug = 1
+		!pc%debug = 1
 		call pc%interpret()
 
 		! Amplifier D
 		pd = new(prog0, [phases(4), pc%outputs(0)])
-		pd%debug = 1
+		!pd%debug = 1
 		call pd%interpret()
 
 		! Amplifier E
 		pe = new(prog0, [phases(5), pd%outputs(0)])
-		pe%debug = 1
+		!pe%debug = 1
 		call pe%interpret()
 
 		do while (pe%stat /= finish)
 
-			print *, '********'
-			print *, 'loop'
+			!print *, '********'
+			!print *, 'loop'
 
 			call pa%set_inputs([pa%inputs, pe%outputs( pe%io-1 )])
 			call pa%interpret()
@@ -95,16 +93,12 @@ subroutine part2()
 
 			call pe%set_inputs([pe%inputs, pd%outputs( pd%io-1 )])
 			call pe%interpret()
-		end do
 
-		!********
+		end do
 
 		maxout = max(maxout, pe%outputs( pe%io-1 ))
 
 		next = next_perm(phases)
-
-		! TODO
-		!exit
 
 	end do
 
@@ -162,7 +156,7 @@ subroutine part1()
 
 	end do
 
-	print *, 'pa%stat = ', pa%stat
+	!print *, 'pa%stat = ', pa%stat
 
 	write(*,*) 'part1 = ', maxout
 	write(*,*) ''
