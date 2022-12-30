@@ -24,13 +24,13 @@ contains
 
 subroutine part2()
 
-	integer, parameter :: namps = 5
+	!integer, parameter :: namps = 5
 
-	integer :: i, maxout
-	integer, allocatable :: prog0(:), inputs(:), outputs(:), &
-			phases(:), proga(:), progb(:), progc(:), progd(:), proge(:)
+	!integer :: i, maxout
+	!integer, allocatable :: prog0(:), inputs(:), outputs(:), &
+	!		phases(:), proga(:), progb(:), progc(:), progd(:), proge(:)
 
-	logical :: next
+	!logical :: next
 
 	!print *, 'starting part2'
 
@@ -89,13 +89,13 @@ subroutine part1()
 	integer, parameter :: namps = 5
 
 	integer :: i, maxout
-	integer, allocatable :: prog0(:), outputs(:), phases(:)
+	integer, allocatable :: prog0(:), phases(:)
 
 	logical :: next
 
 	type(intcode) :: pa, pb, pc, pd, pe
 
-	call readprog(finput, prog0)
+	prog0 = readprog(finput)
 
 	!inputs = [6,4] ! TODO
 	!call interpret(prog, inputs, outputs)
@@ -109,25 +109,26 @@ subroutine part1()
 
 		! Amplifier A
 		pa = new(prog0, [phases(1), 0])
-		call interpret(pa, outputs)
+		!pa%debug = 1
+		call pa%interpret()
 
 		! Amplifier B
-		pb = new(prog0, [phases(2), outputs(1)])
-		call interpret(pb, outputs)
+		pb = new(prog0, [phases(2), pa%outputs(1)])
+		call pb%interpret()
 
 		! Amplifier C
-		pc = new(prog0, [phases(3), outputs(1)])
-		call interpret(pc, outputs)
+		pc = new(prog0, [phases(3), pb%outputs(1)])
+		call pc%interpret()
 
 		! Amplifier D
-		pd = new(prog0, [phases(4), outputs(1)])
-		call interpret(pd, outputs)
+		pd = new(prog0, [phases(4), pc%outputs(1)])
+		call pd%interpret()
 
 		! Amplifier E
-		pe = new(prog0, [phases(5), outputs(1)])
-		call interpret(pe, outputs)
+		pe = new(prog0, [phases(5), pd%outputs(1)])
+		call pe%interpret()
 
-		maxout = max(maxout, outputs(1))
+		maxout = max(maxout, pe%outputs(1))
 
 		next = next_perm(phases)
 

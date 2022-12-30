@@ -34,13 +34,23 @@ module mintcode_v2
 		integer :: ii = 0
 		integer :: io = 0
 
+		! Debug log verbosity
+		integer :: debug = 0
+
+		contains
+			procedure interpret
+
 	end type intcode
+
+	interface new
+		module procedure new_intcode
+	end interface new
 
 contains
 
 !===============================================================================
 
-function new(prog, inputs) result(ic)
+function new_intcode(prog, inputs) result(ic)
 
 	! intcode constructor
 
@@ -55,39 +65,35 @@ function new(prog, inputs) result(ic)
 	allocate(ic%inputs(0: size(inputs)-1))
 	ic%inputs = inputs
 
-end function new
+end function new_intcode
 
 !===============================================================================
 
 !subroutine interpret(prog, inputs, outputs)
-subroutine interpret(ic, outputs)
+subroutine interpret(ic)
 
 	! Interpret an intcode program prog with inputs
 	!
-	! TODO: add optional debug member arg.
+	! TODO: type-bound procedure
 
-	type(intcode), intent(inout) :: ic
-
-	!integer, intent(inout) :: prog(0:)
-	!integer, intent(in) :: inputs(0:)
-	integer, allocatable, intent(out) :: outputs(:)
+	class(intcode), intent(inout) :: ic
 
 	!********
 
-	integer :: inst, ip, ii, io, opcode, ninst, nwrite
+	integer :: inst, opcode, ninst, nwrite
 	integer, allocatable :: p(:)
 
-	! Instruction pointer
-	ip = 0
+	! Instruction pointer.  TODO: move state initialization to new()
+	ic%ip = 0
 
 	! Input and output indices
-	ii = 0
-	io = 0
+	ic%ii = 0
+	ic%io = 0
 
-	allocate(outputs(0: 1023))
+	allocate(ic%outputs(0: 1023))
 
 	do
-		inst = ic%prog(ip)
+		inst = ic%prog(ic%ip)
 		opcode = mod(inst, 100)
 
 		!print *, 'opcode = ', opcode
@@ -123,15 +129,15 @@ subroutine interpret(ic, outputs)
 			nwrite = 1
 			p = get_pars()
 
-			if (ii >= size(ic%inputs)) then
+			if (ic%ii >= size(ic%inputs)) then
 				write(*, '(a)') 'Error in intcode::interpret():' &
 						//' reached end of ic%inputs'
 				exit
 				!stop
 			end if
 
-			ic%prog(p(1)) = ic%inputs(ii)
-			ii = ii + 1
+			ic%prog(p(1)) = ic%inputs(ic%ii)
+			ic%ii = ic%ii + 1
 
 		else if (opcode == output) then
 			ninst  = 2
@@ -139,14 +145,14 @@ subroutine interpret(ic, outputs)
 			p = get_pars()
 
 			! TODO: growable array
-			if (io >= size(outputs)) then
+			if (ic%io >= size(ic%outputs)) then
 				write(*, '(a)') 'Error in intcode::interpret():' &
 						//' reached end of outputs'
 				stop
 			end if
 
-			outputs(io) = p(1)
-			io = io + 1
+			ic%outputs(ic%io) = p(1)
+			ic%io = ic%io + 1
 
 		else if (opcode == jnz) then
 			ninst  = 3
@@ -154,7 +160,7 @@ subroutine interpret(ic, outputs)
 			p = get_pars()
 
 			if (p(1) /= 0) then
-				ip = p(2)
+				ic%ip = p(2)
 				ninst = 0
 			end if
 
@@ -164,7 +170,7 @@ subroutine interpret(ic, outputs)
 			p = get_pars()
 
 			if (p(1) == 0) then
-				ip = p(2)
+				ic%ip = p(2)
 				ninst = 0
 			end if
 
@@ -192,13 +198,13 @@ subroutine interpret(ic, outputs)
 
 		end if
 
-		ip = ip + ninst
+		ic%ip = ic%ip + ninst
 	end do
 
-	print *, 'outputs = ', outputs(0: io - 1)
+	if (ic%debug > 0) print *, 'outputs = ', ic%outputs(0: ic%io - 1)
 
 	! Trim
-	outputs = outputs(0: io - 1)
+	ic%outputs = ic%outputs(0: ic%io - 1)
 
 contains
 
@@ -226,7 +232,7 @@ function get_pars() result(pars)
 
 	! The opcode is at i=0, so start the loop at 1.
 	do i = 1, ninst - 1
-		pars(i) = ic%prog(ip + i)
+		pars(i) = ic%prog(ic%ip + i)
 
 		if (i < ninst - nwrite .and. mod(inst / div, base) == 0) then
 			! Output (write) parameters are always in position mode, so leave
@@ -245,11 +251,10 @@ end subroutine interpret
 
 !===============================================================================
 
-subroutine readprog(finput, prog)
+function readprog(finput) result(prog)
 
-	! Read an intcode program prog from a file finput
-	!
-	! This is easier as a subroutine than a fn since prog is 0-based
+	! Read an intcode program prog from a file finput.  This can be a fn
+	! because new() takes care of the lbound for us
 
 	character(len = *) :: finput
 
@@ -291,7 +296,7 @@ subroutine readprog(finput, prog)
 	end do
 	!print *, 'prog = ', prog
 
-end subroutine readprog
+end function readprog
 
 !===============================================================================
 
