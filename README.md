@@ -25,11 +25,14 @@ My difficulty ratings are obviously subjective.  What's hard for me might be eas
 
 ### 2019
 
+Much of AOC 2019 is centered on [Intcode](https://esolangs.org/wiki/Intcode), an assembly-like language for which we are tasked with writing an interpreter.
+
 | Day | Description | Difficulty |
 |-----|-------------|------------|
 |   [2](2019/2) | Intcode: add, multiply, and finish | 😀 |
 |   [5](2019/5) | Intcode: I/O, parameter modes, jumps, and comparisons | 😀 |
 |   [7](2019/7) | Intcode: piping I/O between programs, pausing and continuing interpretation while awaiting input | 😅😅 |
+|   [9](2019/9) | Intcode: relative mode, 64 bit, memory buffer | 😀 |
 
 ### 2022
 
