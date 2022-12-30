@@ -263,6 +263,45 @@ end function countchars
 
 !===============================================================================
 
+logical function next_perm(array) result(next)
+
+	integer, allocatable :: array(:)
+	integer :: i, j, n
+
+	n = size(array)
+
+	i = n
+	do while (i > 1)
+		if (.not. array(i - 1) >= array(i)) exit
+		i = i - 1
+	end do
+
+	if (i <= 1) then
+		! This is the last permutation
+		next = .false.
+		return
+	end if
+
+	j = n
+	do while (array(j) <= array(i - 1))
+		j = j - 1
+	end do
+
+	array([i-1, j]) = array([j, i-1])
+
+	j = n
+	do while (i < j)
+		array([i, j]) = array([j, i])
+		i = i + 1
+		j = j - 1
+	end do
+
+	next = .true.
+
+end function next_perm
+
+!===============================================================================
+
 end module utils
 
 !===============================================================================
