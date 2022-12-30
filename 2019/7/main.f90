@@ -76,6 +76,7 @@ subroutine part2()
 		call pe%interpret()
 
 		do while (pe%stat /= finish)
+			! Feedback loops
 
 			!print *, '********'
 			!print *, 'loop'

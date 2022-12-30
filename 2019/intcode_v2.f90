@@ -97,7 +97,7 @@ function new_intcode(prog, inputs) result(ic)
 	! Relative base
 	ic%rb = 0
 
-	allocate(ic%outputs(0: 1023))
+	allocate(ic%outputs(0: 1024*1024 - 1))
 
 end function new_intcode
 
@@ -129,7 +129,10 @@ end subroutine set_inputs
 
 subroutine interpret(ic)
 
-	! Interpret an intcode program prog with inputs
+	! Interpret an intcode program prog with inputs.  Return either when the
+	! program is finished (halted) or when the inputs have been exhausted.
+	! Interpretation can be continued after new inputs are available with
+	! multiple invocations (see day 7)
 
 	class(intcode), intent(inout) :: ic
 
@@ -277,8 +280,8 @@ contains
 function get_parameters() result(pars)
 
 	! Get the parameters (arguments) for the instruction at ip in program prog.
-	! Handle immediate mode vs position mode.  Assume write args are always at
-	! the end
+	! Handle immediate mode, position mode, etc..  Assume write args are always
+	! at the end
 	!
 	! Unlike most other arrays in this interpreter, the result pars array is
 	! a Fortran default 1-based array.  You can think of pars(0) as the
@@ -314,7 +317,7 @@ function get_parameters() result(pars)
 
 		else if (mod(inst / div, base) == 2) then
 
-			! Relative mode for write (out) param
+			! Relative mode for write (out) param: don't de-reference the index
 			pars(i) = pars(i) + ic%rb
 
 		end if
