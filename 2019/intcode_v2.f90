@@ -34,11 +34,16 @@ module mintcode_v2
 		integer :: ii = 0
 		integer :: io = 0
 
+		! Status.  Set to current opcode in interpret() to indicate whether the
+		! program is finished or waiting on input.
+		integer :: stat = 0
+
 		! Debug log verbosity
 		integer :: debug = 0
 
 		contains
 			procedure interpret
+			procedure set_inputs
 
 	end type intcode
 
@@ -65,25 +70,7 @@ function new_intcode(prog, inputs) result(ic)
 	allocate(ic%inputs(0: size(inputs)-1))
 	ic%inputs = inputs
 
-end function new_intcode
-
-!===============================================================================
-
-!subroutine interpret(prog, inputs, outputs)
-subroutine interpret(ic)
-
-	! Interpret an intcode program prog with inputs
-	!
-	! TODO: type-bound procedure
-
-	class(intcode), intent(inout) :: ic
-
-	!********
-
-	integer :: inst, opcode, ninst, nwrite
-	integer, allocatable :: p(:)
-
-	! Instruction pointer.  TODO: move state initialization to new()
+	! Instruction pointer
 	ic%ip = 0
 
 	! Input and output indices
@@ -92,16 +79,62 @@ subroutine interpret(ic)
 
 	allocate(ic%outputs(0: 1023))
 
+end function new_intcode
+
+!===============================================================================
+
+subroutine set_inputs(ic, inputs)
+
+	! Would it make more sense to have a push_inputs fn?  Alternatively, old
+	! inputs are never reused, so we could reset ii to 0 and only use the new
+	! inputs
+
+	class(intcode), intent(inout) :: ic
+
+	integer, intent(in) :: inputs(0:)
+
+	integer, allocatable :: tmp(:)
+
+	! Is this safe?  Do I need a temp array?
+
+	tmp = inputs
+
+	deallocate(ic%inputs)
+	allocate(ic%inputs(0: size(tmp)-1))
+	ic%inputs = tmp
+
+end subroutine set_inputs
+
+!===============================================================================
+
+subroutine interpret(ic)
+
+	! Interpret an intcode program prog with inputs
+
+	class(intcode), intent(inout) :: ic
+
+	!********
+
+	integer :: inst, opcode, ninst, nwrite
+	integer, allocatable :: p(:)
+
+	if (ic%debug > 0) print *, 'inputs = ', ic%inputs
+	if (ic%debug > 0) print *, 'ip     = ', ic%ip
+
 	do
 		inst = ic%prog(ic%ip)
 		opcode = mod(inst, 100)
+		ic%stat = opcode
 
 		!print *, 'opcode = ', opcode
 		!print *, 'inst = ', inst
 
-		! Number of values in an instruction.  Only initialized here to
-		! safeguard against an infinite loop
+		! Number of values in an instruction, including the inst/opcode itself and
+		! all its parameters.  Only initialized here to safeguard against an
+		! infinite loop
 		ninst  = 1
+
+		! Number of write (output) parameters
 		nwrite = 0
 
 		if (opcode == finish) then
@@ -130,8 +163,8 @@ subroutine interpret(ic)
 			p = get_pars()
 
 			if (ic%ii >= size(ic%inputs)) then
-				write(*, '(a)') 'Error in intcode::interpret():' &
-						//' reached end of ic%inputs'
+				!write(*, '(a)') 'Error in intcode::interpret():' &
+				!		//' reached end of ic%inputs'
 				exit
 				!stop
 			end if
@@ -192,6 +225,7 @@ subroutine interpret(ic)
 
 		else
 
+			! Could return a special %stat here instead of stopping
 			write(*, '(a,i0,a)') 'Error in intcode::interpret():' &
 					//' unknown opcode "', opcode, '"'
 			stop
@@ -202,9 +236,11 @@ subroutine interpret(ic)
 	end do
 
 	if (ic%debug > 0) print *, 'outputs = ', ic%outputs(0: ic%io - 1)
+	if (ic%debug > 0) print *, 'stat = ', ic%stat
+	if (ic%debug > 0) print *, ''
 
-	! Trim
-	ic%outputs = ic%outputs(0: ic%io - 1)
+	!! Trim. TODO?
+	!ic%outputs = ic%outputs(0: ic%io - 1)
 
 contains
 

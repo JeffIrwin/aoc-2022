@@ -12,7 +12,8 @@ module m
 
 #if 0
 	character(len = *), parameter :: finput  = 'test-input.txt'
-	character(len = *), parameter :: finput2 = 'test-input2.txt'
+	!character(len = *), parameter :: finput2 = 'test-input2.txt'
+	character(len = *), parameter :: finput2 = 'test-input3.txt'
 #else
 	character(len = *), parameter :: finput  = 'input.txt'
 	character(len = *), parameter :: finput2 = 'input.txt'
@@ -24,61 +25,91 @@ contains
 
 subroutine part2()
 
-	!integer, parameter :: namps = 5
+	integer, parameter :: namps = 5
 
-	!integer :: i, maxout
-	!integer, allocatable :: prog0(:), inputs(:), outputs(:), &
-	!		phases(:), proga(:), progb(:), progc(:), progd(:), proge(:)
+	integer :: i, maxout
+	integer, allocatable :: prog0(:), inputs(:), outputs(:), &
+			phases(:)
 
-	!logical :: next
+	type(intcode) :: pa, pb, pc, pd, pe
 
-	!print *, 'starting part2'
+	logical :: next
 
-	!call readprog(finput2, prog0)
+	print *, 'starting part2'
 
-	!maxout = -huge(maxout)
+	prog0 = readprog(finput2)
 
-	!phases = [(i, i = 5, 2*namps - 1)]
-	!next = .true.
-	!do while (next)
-	!	!print *, 'phases = ', phases
+	maxout = -huge(maxout)
 
-	!	! Amplifier A
-	!	inputs = [phases(1), 0]
-	!	proga = prog0
-	!	call interpret(proga, inputs, outputs)
+	phases = [(i, i = 5, 2*namps - 1)]
+	!phases = [9, 8, 7, 6, 5] ! TODO
+	!phases = [(i, i = 0, namps - 1)]
 
-	!	! Amplifier B
-	!	inputs = [phases(2), outputs(1)]
-	!	progb = prog0
-	!	call interpret(progb, inputs, outputs)
+	next = .true.
+	do while (next)
+		print *, 'phases = ', phases
 
-	!	! Amplifier C
-	!	inputs = [phases(3), outputs(1)]
-	!	progc = prog0
-	!	call interpret(progc, inputs, outputs)
+		! First loop: supply initial 0 input and phase settings
 
-	!	! Amplifier D
-	!	inputs = [phases(4), outputs(1)]
-	!	progd = prog0
-	!	call interpret(progd, inputs, outputs)
+		! Amplifier A
+		pa = new(prog0, [phases(1), 0])
+		pa%debug = 1
+		call pa%interpret()
 
-	!	! Amplifier E
-	!	inputs = [phases(5), outputs(1)]
-	!	proge = prog0
-	!	call interpret(proge, inputs, outputs)
+		! Amplifier B
+		pb = new(prog0, [phases(2), pa%outputs(0)])
+		pb%debug = 1
+		call pb%interpret()
 
-	!	maxout = max(maxout, outputs(1))
+		! Amplifier C
+		pc = new(prog0, [phases(3), pb%outputs(0)])
+		pc%debug = 1
+		call pc%interpret()
 
-	!	next = next_perm(phases)
+		! Amplifier D
+		pd = new(prog0, [phases(4), pc%outputs(0)])
+		pd%debug = 1
+		call pd%interpret()
 
-	!	! TODO
-	!	exit
+		! Amplifier E
+		pe = new(prog0, [phases(5), pd%outputs(0)])
+		pe%debug = 1
+		call pe%interpret()
 
-	!end do
+		do while (pe%stat /= finish)
 
-	!write(*,*) 'part2 = ', maxout
-	!write(*,*) ''
+			print *, '********'
+			print *, 'loop'
+
+			call pa%set_inputs([pa%inputs, pe%outputs( pe%io-1 )])
+			call pa%interpret()
+
+			call pb%set_inputs([pb%inputs, pa%outputs( pa%io-1 )])
+			call pb%interpret()
+
+			call pc%set_inputs([pc%inputs, pb%outputs( pb%io-1 )])
+			call pc%interpret()
+
+			call pd%set_inputs([pd%inputs, pc%outputs( pc%io-1 )])
+			call pd%interpret()
+
+			call pe%set_inputs([pe%inputs, pd%outputs( pd%io-1 )])
+			call pe%interpret()
+		end do
+
+		!********
+
+		maxout = max(maxout, pe%outputs( pe%io-1 ))
+
+		next = next_perm(phases)
+
+		! TODO
+		!exit
+
+	end do
+
+	write(*,*) 'part2 = ', maxout
+	write(*,*) ''
 
 end subroutine part2
 
@@ -97,9 +128,6 @@ subroutine part1()
 
 	prog0 = readprog(finput)
 
-	!inputs = [6,4] ! TODO
-	!call interpret(prog, inputs, outputs)
-
 	maxout = -huge(maxout)
 
 	phases = [(i, i = 0, namps - 1)]
@@ -113,29 +141,28 @@ subroutine part1()
 		call pa%interpret()
 
 		! Amplifier B
-		pb = new(prog0, [phases(2), pa%outputs(1)])
+		pb = new(prog0, [phases(2), pa%outputs(0)])
 		call pb%interpret()
 
 		! Amplifier C
-		pc = new(prog0, [phases(3), pb%outputs(1)])
+		pc = new(prog0, [phases(3), pb%outputs(0)])
 		call pc%interpret()
 
 		! Amplifier D
-		pd = new(prog0, [phases(4), pc%outputs(1)])
+		pd = new(prog0, [phases(4), pc%outputs(0)])
 		call pd%interpret()
 
 		! Amplifier E
-		pe = new(prog0, [phases(5), pd%outputs(1)])
+		pe = new(prog0, [phases(5), pd%outputs(0)])
 		call pe%interpret()
 
-		maxout = max(maxout, pe%outputs(1))
+		maxout = max(maxout, pe%outputs(0))
 
 		next = next_perm(phases)
 
-		! TODO
-		!exit
-
 	end do
+
+	print *, 'pa%stat = ', pa%stat
 
 	write(*,*) 'part1 = ', maxout
 	write(*,*) ''
