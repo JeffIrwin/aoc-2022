@@ -10,6 +10,8 @@ module mintcode_v2
 
 	implicit none
 
+	integer, parameter :: ick = 8
+
 	! opcodes
 	integer, parameter :: &
 			add    = 1, &
@@ -20,12 +22,13 @@ module mintcode_v2
 			jz     = 6, &  ! jump if zero (false)
 			lt     = 7, &  ! less than
 			eq     = 8, &  ! equals
+			rbo    = 9, &  ! relative base (rb) offset
 			finish = 99
 
 	! An intcode program and its state
 	type intcode
 
-		integer, allocatable :: prog(:), inputs(:), outputs(:)
+		integer(kind = ick), allocatable :: prog(:), inputs(:), outputs(:)
 
 		! Instruction pointer
 		integer :: ip = 0
@@ -33,6 +36,9 @@ module mintcode_v2
 		! Input and output indices
 		integer :: ii = 0
 		integer :: io = 0
+
+		! Relative base
+		integer :: rb = 0
 
 		! Status.  Set to current opcode in interpret() to indicate whether the
 		! program is finished or waiting on input.
@@ -59,13 +65,24 @@ function new_intcode(prog, inputs) result(ic)
 
 	! intcode constructor
 
-	integer, intent(in) :: prog(0:)
-	integer, intent(in) :: inputs(0:)
+	integer(kind = ick), intent(in) :: prog(0:)
+	integer(kind = ick), intent(in) :: inputs(0:)
 
 	type(intcode) :: ic
 
-	allocate(ic%prog(0: size(prog)-1))
-	ic%prog = prog
+	!********
+
+	integer :: np
+	integer, parameter :: nbuf = 1024
+
+	np = size(prog)
+	allocate(ic%prog(0: np-1 + nbuf))
+	ic%prog(0: np-1) = prog
+
+	! Memory beyond the initial program starts with the value 0 and can be read or
+	! written like any other memory.  If nbuf is not sufficiently big, the program
+	! should segfault when running a debug build
+	ic%prog(np: np + nbuf - 1) = 0
 
 	allocate(ic%inputs(0: size(inputs)-1))
 	ic%inputs = inputs
@@ -76,6 +93,9 @@ function new_intcode(prog, inputs) result(ic)
 	! Input and output indices
 	ic%ii = 0
 	ic%io = 0
+
+	! Relative base
+	ic%rb = 0
 
 	allocate(ic%outputs(0: 1023))
 
@@ -91,9 +111,9 @@ subroutine set_inputs(ic, inputs)
 
 	class(intcode), intent(inout) :: ic
 
-	integer, intent(in) :: inputs(0:)
+	integer(kind = ick), intent(in) :: inputs(0:)
 
-	integer, allocatable :: tmp(:)
+	integer(kind = ick), allocatable :: tmp(:)
 
 	! Is this safe?  Do I need a temp array?
 
@@ -116,7 +136,7 @@ subroutine interpret(ic)
 	!********
 
 	integer :: inst, opcode, ninst, nwrite
-	integer, allocatable :: p(:)
+	integer(kind = ick), allocatable :: p(:)
 
 	if (ic%debug > 0) print *, 'inputs = ', ic%inputs
 	if (ic%debug > 0) print *, 'ip     = ', ic%ip
@@ -223,6 +243,13 @@ subroutine interpret(ic)
 			ic%prog(p(3)) = 0
 			if (p(1) == p(2)) ic%prog(p(3)) = 1
 
+		else if (opcode == rbo) then
+			ninst  = 2
+			nwrite = 0
+			p = get_parameters()
+
+			ic%rb = ic%rb + p(1)
+
 		else
 
 			! Could return a special %stat here instead of stopping
@@ -257,7 +284,7 @@ function get_parameters() result(pars)
 	! a Fortran default 1-based array.  You can think of pars(0) as the
 	! inst/opcode, just like argv[0] is the command (not an argument) in C.
 
-	integer, allocatable :: pars(:)
+	integer(kind = ick), allocatable :: pars(:)
 	integer :: i, div
 	integer, parameter :: base = 10
 
@@ -269,12 +296,27 @@ function get_parameters() result(pars)
 
 	! The opcode is at i=0, so start the loop at 1.
 	do i = 1, ninst - 1
+
+		! Immediate mode (or index for another mode)
 		pars(i) = ic%prog(ic%ip + i)
 
+		! Output (write) parameters are never in immediate mode, so leave
+		! them as an index for use in caller
 		if (i < ninst - nwrite .and. mod(inst / div, base) == 0) then
-			! Output (write) parameters are always in position mode, so leave
-			! them as an index for use in caller
+
+			! Position mode
 			pars(i) = ic%prog( pars(i) )
+
+		else if (i < ninst - nwrite .and. mod(inst / div, base) == 2) then
+
+			! Relative mode
+			pars(i) = ic%prog( pars(i) + ic%rb )
+
+		else if (mod(inst / div, base) == 2) then
+
+			! Relative mode for write (out) param
+			pars(i) = pars(i) + ic%rb
+
 		end if
 
 		div = div * base
@@ -295,13 +337,14 @@ function readprog(finput) result(prog)
 
 	character(len = *) :: finput
 
-	integer, allocatable :: prog(:)
+	integer(kind = ick), allocatable :: prog(:)
 
 	!********
 
 	character(len = :), allocatable :: s
 
-	integer :: nprog, junk, iu, is, i
+	integer :: nprog, iu, is, i
+	integer(kind = ick) :: junk
 
 	nprog = 0
 
@@ -313,7 +356,7 @@ function readprog(finput) result(prog)
 	is = 1
 	do while (is < len_trim(s))
 
-		junk = readint(s, is)
+		junk = readint8(s, is)
 		nprog = nprog + 1
 
 		!print *, 'nprog = ', nprog
@@ -328,7 +371,7 @@ function readprog(finput) result(prog)
 	is = 1
 	i = 0
 	do while (is < len_trim(s))
-		prog(i) = readint(s, is)
+		prog(i) = readint8(s, is)
 		i = i + 1
 	end do
 	!print *, 'prog = ', prog

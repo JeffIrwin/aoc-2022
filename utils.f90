@@ -193,6 +193,43 @@ end function readint
 
 !===============================================================================
 
+integer(kind = 8) function readint8(s, is)
+
+	! TODO: error handling
+
+	character(len = *), intent(in) :: s
+
+	integer, intent(inout) :: is
+
+	!********
+
+	integer :: is0
+
+	! Negative numbers are also allowed.  Assume they are well-formed, e.g. this
+	! will not parse something like -2-4 (which I think might actually be
+	! present in one of the earlier days?)
+	do while (.not. (isnum(s(is:is)) .or. s(is:is) == '-') &
+			.and. is <= len_trim(s))
+		is = is + 1
+		if (is > len_trim(s)) exit
+	end do
+
+	is0 = is
+	do while ((isnum(s(is:is)) .or. s(is:is) == '-'))
+		is = is + 1
+		if (is > len_trim(s)) exit
+	end do
+
+	!print *, 'is0, is = ', is0, is
+
+	read(s(is0: is - 1), *) readint8
+
+	!print *, 'int = ', readint8
+
+end function readint8
+
+!===============================================================================
+
 integer function countlines(f) result(n)
 
 	! Count number of lines n in a text file named f

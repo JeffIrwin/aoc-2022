@@ -27,9 +27,10 @@ subroutine part2()
 
 	integer, parameter :: namps = 5
 
-	integer :: i, maxout
-	integer, allocatable :: prog0(:), inputs(:), outputs(:), &
-			phases(:)
+	integer :: i
+	integer, allocatable :: phases(:)
+	integer(kind = ick) :: maxout
+	integer(kind = ick), allocatable :: prog0(:), inputs(:), outputs(:)
 
 	type(intcode) :: pa, pb, pc, pd, pe
 
@@ -50,27 +51,27 @@ subroutine part2()
 		! First loop: supply initial 0 input and phase settings
 
 		! Amplifier A
-		pa = new(prog0, [phases(1), 0])
+		pa = new(prog0, [int(phases(1),ick), 0_ick])
 		!pa%debug = 1
 		call pa%interpret()
 
 		! Amplifier B
-		pb = new(prog0, [phases(2), pa%outputs(0)])
+		pb = new(prog0, [int(phases(2),ick), pa%outputs(0)])
 		!pb%debug = 1
 		call pb%interpret()
 
 		! Amplifier C
-		pc = new(prog0, [phases(3), pb%outputs(0)])
+		pc = new(prog0, [int(phases(3),ick), pb%outputs(0)])
 		!pc%debug = 1
 		call pc%interpret()
 
 		! Amplifier D
-		pd = new(prog0, [phases(4), pc%outputs(0)])
+		pd = new(prog0, [int(phases(4),ick), pc%outputs(0)])
 		!pd%debug = 1
 		call pd%interpret()
 
 		! Amplifier E
-		pe = new(prog0, [phases(5), pd%outputs(0)])
+		pe = new(prog0, [int(phases(5),ick), pd%outputs(0)])
 		!pe%debug = 1
 		call pe%interpret()
 
@@ -114,7 +115,8 @@ subroutine part1()
 	integer, parameter :: namps = 5
 
 	integer :: i, maxout
-	integer, allocatable :: prog0(:), phases(:)
+	integer, allocatable :: phases(:)
+	integer(kind = ick), allocatable :: prog0(:)
 
 	logical :: next
 
@@ -130,24 +132,24 @@ subroutine part1()
 		!print *, 'phases = ', phases
 
 		! Amplifier A
-		pa = new(prog0, [phases(1), 0])
+		pa = new(prog0, [int(phases(1),ick), 0_ick])
 		!pa%debug = 1
 		call pa%interpret()
 
 		! Amplifier B
-		pb = new(prog0, [phases(2), pa%outputs(0)])
+		pb = new(prog0, [int(phases(2),ick), pa%outputs(0)])
 		call pb%interpret()
 
 		! Amplifier C
-		pc = new(prog0, [phases(3), pb%outputs(0)])
+		pc = new(prog0, [int(phases(3),ick), pb%outputs(0)])
 		call pc%interpret()
 
 		! Amplifier D
-		pd = new(prog0, [phases(4), pc%outputs(0)])
+		pd = new(prog0, [int(phases(4),ick), pc%outputs(0)])
 		call pd%interpret()
 
 		! Amplifier E
-		pe = new(prog0, [phases(5), pd%outputs(0)])
+		pe = new(prog0, [int(phases(5),ick), pd%outputs(0)])
 		call pe%interpret()
 
 		maxout = max(maxout, pe%outputs(0))
