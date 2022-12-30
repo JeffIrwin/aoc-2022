@@ -33,6 +33,7 @@ Much of AOC 2019 is centered on [Intcode](https://esolangs.org/wiki/Intcode), an
 |   [5](2019/5) | Intcode: I/O, parameter modes, jumps, and comparisons | 😀 |
 |   [7](2019/7) | Intcode: piping I/O between programs, pausing and continuing interpretation while awaiting input | 😅😅 |
 |   [9](2019/9) | Intcode: relative mode, 64 bit, memory buffer | 😀 |
+|   [11](2019/1) | Interfacing with [Langton's ant](https://en.wikipedia.org/wiki/Langton%27s_ant) in Intcode | 😀 |
 
 ### 2022
 
