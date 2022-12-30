@@ -5,7 +5,7 @@ Advent of code (more than just 2022) in Fortran
 
 https://adventofcode.com/
 
-The solution for each day is implemented in `yyyy/n/main.f90`, where `yyyy` is the year and `n` is the day, e.g. 2022/1, 2022/2, 2022/3, ...
+The solution for each day is implemented in `yyyy/d/main.f90`, where `yyyy` is the year and `d` is the day, e.g. 2022/1, 2022/2, 2022/3, ...
 
 To compile and run an implementation:
 
