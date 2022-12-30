@@ -21,7 +21,7 @@ flags="-cpp -Wall -Wextra -Wno-tabs -fbounds-check -Wno-maybe-uninitialized"
 
 $fc --version
 
-$fc -o main ../../utils.f90 ../intcode.f90 main.f90 $flags
+$fc -o main ../../utils.f90 ../*.f90 main.f90 $flags
 
 #===============================================================================
 
