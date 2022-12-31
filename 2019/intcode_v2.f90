@@ -265,7 +265,7 @@ subroutine interpret(ic)
 		ic%ip = ic%ip + ninst
 	end do
 
-	if (ic%debug > 0) print *, 'outputs = ', ic%outputs(0: ic%io - 1)
+	if (ic%debug > 1) print *, 'outputs = ', ic%outputs(0: ic%io - 1)
 	if (ic%debug > 0) print *, 'stat = ', ic%stat
 	if (ic%debug > 0) print *, ''
 
