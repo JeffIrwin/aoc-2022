@@ -69,8 +69,6 @@ subroutine part2()
 		!! Pause for stdin and display
 		!read(*,*) move
 
-		call rsleep(0.04)
-
 		! Automatic override: track the paddle's x position
 		if (xball > xpaddle) then
 			move = 'e'
@@ -108,8 +106,11 @@ contains
 
 subroutine render()
 
-	! It's faster without printing frames
-	logical, parameter :: display = .true.
+	! This is a bit more than just rendering, the automatic paddle moving logic is
+	! tied up here
+
+	! It's faster without printing frames, sleep or not
+	logical, parameter :: display = .false.
 
 	ntile = ic%io/3
 	outr = reshape(ic%outputs(0: ic%io-1), [nout, ntile])
@@ -161,6 +162,8 @@ subroutine render()
 		write(*,*)
 		end do
 		write(*,*)
+
+		call rsleep(0.04)
 
 	end if
 
