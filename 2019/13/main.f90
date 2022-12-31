@@ -110,7 +110,7 @@ subroutine render()
 	! tied up here
 
 	! It's faster without printing frames, sleep or not
-	logical, parameter :: display = .false.
+	logical, parameter :: display = .true.
 
 	ntile = ic%io/3
 	outr = reshape(ic%outputs(0: ic%io-1), [nout, ntile])
@@ -207,8 +207,7 @@ subroutine part1()
 
 	prog = readprog(finput)
 
-	!inputs = [0] ! TODO
-
+	allocate(inputs(0))
 	ic = new(prog, inputs)
 	call ic%interpret()
 
