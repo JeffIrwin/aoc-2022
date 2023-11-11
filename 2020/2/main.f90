@@ -32,33 +32,33 @@ subroutine part1()
 		read(iu, '(a)', iostat = io) s
 		if (io == iostat_end) exit
 
-		print *, 's = ', trim(s)
+		!print *, 's = ', trim(s)
 
 		is = 1
 		nmin = readuint(s, is)
-		print *, 'nmin = ', nmin
+		!print *, 'nmin = ', nmin
 
 		! Skip delimiter `-`
 		is = is + 1
 		nmax = readuint(s, is)
-		print *, 'nmax = ', nmax
+		!print *, 'nmax = ', nmax
 
 		! Skip delimiter ` `
 		is = is + 1
 		letter = s(is: is)
-		print *, 'letter = ', letter
+		!print *, 'letter = ', letter
 
 		! Skip delimiters `: `
 		is = is + 2
 		password = readword(s, is)
-		print *, 'password = ', password
+		!print *, 'password = ', password
 
 		! Count occurences of letter in password
 		n = 0
 		do i = 1, len(password)
 			if (password(i:i) == letter) n = n + 1
 		end do
-		print *, 'n = ', n
+		!print *, 'n = ', n
 
 		if (nmin <= n .and. n <= nmax) isum = isum + 1
 
@@ -78,7 +78,7 @@ subroutine part2()
 	character :: s*256, letter*1
 	character(len = :), allocatable :: password
 
-	integer :: i, iu, io, isum, nmin, nmax, is, n
+	integer :: iu, io, isum, nmin, nmax, is
 
 	open(file = finput, newunit = iu, status = 'old')
 
@@ -88,39 +88,30 @@ subroutine part2()
 		read(iu, '(a)', iostat = io) s
 		if (io == iostat_end) exit
 
-		print *, 's = ', trim(s)
+		!print *, 's = ', trim(s)
 
 		is = 1
 		nmin = readuint(s, is)
-		print *, 'nmin = ', nmin
+		!print *, 'nmin = ', nmin
 
 		! Skip delimiter `-`
 		is = is + 1
 		nmax = readuint(s, is)
-		print *, 'nmax = ', nmax
+		!print *, 'nmax = ', nmax
 
 		! Skip delimiter ` `
 		is = is + 1
 		letter = s(is: is)
-		print *, 'letter = ', letter
+		!print *, 'letter = ', letter
 
 		! Skip delimiters `: `
 		is = is + 2
 		password = readword(s, is)
-		print *, 'password = ', password
+		!print *, 'password = ', password
 
 		! Different password policy from part 1
 		if (password(nmin:nmin) == letter .neqv. &
 		    password(nmax:nmax) == letter) isum = isum + 1
-
-		!! Count occurences of letter in password
-		!n = 0
-		!do i = 1, len(password)
-		!	if (password(i:i) == letter) n = n + 1
-		!end do
-		!print *, 'n = ', n
-
-		!if (nmin <= n .and. n <= nmax) isum = isum + 1
 
 	end do
 
