@@ -10,7 +10,7 @@ if [[ $# -ne 1 ]]; then
 	exit -1
 fi
 
-mkdir $1
+mkdir -p $1
 
 cp template.f90 $1/main.f90
 
@@ -19,5 +19,6 @@ echo ""
 echo "cd $1"
 echo "../../build.sh && time ./main"
 
-gvim $1/test-input.txt $1/main.f90 &
+## I'm now using console vi in tmux instead of gvim in multiple windows
+#gvim $1/test-input.txt $1/main.f90 &
 
