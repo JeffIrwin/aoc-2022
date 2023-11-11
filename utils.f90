@@ -193,6 +193,40 @@ end function readint
 
 !===============================================================================
 
+integer function readuint(s, is)
+
+	! TODO: error handling
+
+	character(len = *), intent(in) :: s
+
+	integer, intent(inout) :: is
+
+	!********
+
+	integer :: is0
+
+	do while (.not. (isnum(s(is:is))) &
+			.and. is <= len_trim(s))
+		is = is + 1
+		if (is > len_trim(s)) exit
+	end do
+
+	is0 = is
+	do while (isnum(s(is:is)))
+		is = is + 1
+		if (is > len_trim(s)) exit
+	end do
+
+	!print *, 'is0, is = ', is0, is
+
+	read(s(is0: is - 1), *) readuint
+
+	!print *, 'int = ', readuint
+
+end function readuint
+
+!===============================================================================
+
 integer(kind = 8) function readint8(s, is)
 
 	! TODO: error handling

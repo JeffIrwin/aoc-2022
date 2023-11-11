@@ -99,10 +99,9 @@ subroutine part2()
 	!print *, 'vec = ', vec
 
 	do i = 3, n
-	do j = 1, i - 1
+	do j = 2, i - 1
 	do k = 1, j - 1
 		if (sum(vec([i,j,k])) == 2020) then
-			!isum = vec(i) * vec(j) * vec(k)
 			isum = product(vec([i,j,k]))
 		end if
 	end do
