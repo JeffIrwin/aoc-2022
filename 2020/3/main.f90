@@ -8,10 +8,21 @@ module m
 	implicit none
 
 #if 0
-	character(len = *), parameter :: finput = 'test-input.txt'
+	character(len = *), parameter :: finput = "test-input.txt"
 #else
-	character(len = *), parameter :: finput = 'input.txt'
+	character(len = *), parameter :: finput = "input.txt"
 #endif
+
+	character, parameter :: &
+			ESC             = char(27)
+
+	! ANSI escape codes.  c.f.
+	! https://github.com/JeffIrwin/cali/blob/main/src/cali.f90
+	character(len = *), parameter :: &
+			RED         = ESC//"[91;1m", &
+			MAGENTA     = ESC//"[95;1m", &
+			GREEN       = ESC//"[92m", &
+			RESET_COLOR = ESC//"[0m"
 
 contains
 
@@ -196,15 +207,16 @@ program main
 
 	use m
 
-	write(*,*) 'Starting AOC main'
-	write(*,*) 'Input file = ', finput
-	write(*,*) ''
+	write(*,*) MAGENTA//"Starting AOC main"//RESET_COLOR
+	write(*,*) "Input file = ", finput
+	write(*,*)
 
 	call part1()
 	call part2()
 
-	write(*,*) 'Ending AOC main'
-	write(*,*) ''
+	write(*,*) GREEN  //"Success!"//RESET_COLOR
+	write(*,*) MAGENTA//"Ending AOC main"//RESET_COLOR
+	write(*,*)
 
 end program main
 
